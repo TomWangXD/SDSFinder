@@ -1,11 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
 
-        <IsPackable>false</IsPackable>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+    <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
-    </PropertyGroup>
+  </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="bunit" Version="1.27.17" />
         <PackageReference Include="Indium.Infor" Version="1.1.0-alpha.47" />
@@ -19,11 +21,13 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
-    <ItemGroup>
+  <ItemGroup>
       <Folder Include="Stub\" />
       <Folder Include="Stub\" />
-    </ItemGroup>
-    <ItemGroup>
+  </ItemGroup>
+
+  <ItemGroup>
       <ProjectReference Include="..\SDSFinder\SDSFinder.csproj" />
-    </ItemGroup>
+  </ItemGroup>
+
 </Project>
