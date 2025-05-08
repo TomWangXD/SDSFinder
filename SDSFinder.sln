@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35919.96 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSFinder", "SDSFinder\SDSFinder.csproj", "{CCC30869-E4E5-F56F-A64F-83F5149E9CBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SDSFinder.Tests", "SDSFinder.Tests\SDSFinder.Tests.csproj", "{513598E4-CF13-4A89-8DD6-604F02804D93}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CCC30869-E4E5-F56F-A64F-83F5149E9CBD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCC30869-E4E5-F56F-A64F-83F5149E9CBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCC30869-E4E5-F56F-A64F-83F5149E9CBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCC30869-E4E5-F56F-A64F-83F5149E9CBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{513598E4-CF13-4A89-8DD6-604F02804D93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{513598E4-CF13-4A89-8DD6-604F02804D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{513598E4-CF13-4A89-8DD6-604F02804D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{513598E4-CF13-4A89-8DD6-604F02804D93}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DE3D3552-E6FE-4279-BFC4-77D0911C1EB7}
+	EndGlobalSection
+EndGlobal
