@@ -3,6 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+	  <OutputPath>C:\Projects\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Controllers\**" />
@@ -56,6 +57,7 @@
     <Folder Include="EFModels\Configurations\" />
     <Folder Include="EFModels\DataBindings\" />
     <Folder Include="SQL\v1.0\" />
-    <Folder Include="Workflow\" />    
+    <Folder Include="Workflow\" />
+    <Folder Include="SQL\" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,14 @@
+﻿{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "Indium Corporation",
+  "classifications": [ "Web", "Blazor" ],
+  "identity": "SDSFinder",
+  "name": "Indium Blazor Server Template",
+  "shortName": "indiumblazor",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "SDSFinder",
+  "preferNameDirectory": true
+}
