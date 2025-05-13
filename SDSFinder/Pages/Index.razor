@@ -1,0 +1,48 @@
+﻿@page "/"
+
+@inject IJSRuntime JSRuntime
+@inject ILogger<Index> Logger
+@inject MudBlazor.ISnackbar Snackbar
+
+
+<PageTitle>SDSFinder - Dashboard</PageTitle>
+<div>
+    <h1>Dashboard</h1>
+</div>
+
+
+@code {
+    /// <summary>
+    /// This is a function that gets called when the page is first rendered.
+    /// This page can be cached and may not always run when changing pages, just the first time within the instance
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // DELETE ME IF NOT USED
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("An Error Occurred", Severity.Error);
+            Logger.LogError(ex.ToString());
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+    }
+
+    /// <summary>
+    /// This is a function that gets called any time that MainLayout.razor re-renders.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        try
+        {
+            // DELETE ME IF NOT USED
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("An Error Occurred", Severity.Error);
+            Logger.LogError(ex.ToString());
+        }
+    }
+}

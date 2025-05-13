@@ -18,6 +18,8 @@ namespace SDSFinder.EFContexts;
             this.ChangeTracker.LazyLoadingEnabled = true;
         }
 
+        // Add DbSets here
+        //public virtual DbSet<object> Table { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -28,6 +30,7 @@ namespace SDSFinder.EFContexts;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
 
             entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
         });
@@ -37,22 +40,22 @@ namespace SDSFinder.EFContexts;
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 
-    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-}
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+    }
 
-public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
-{
-    public SDSFinderContext CreateDbContext(string[] args)
+    public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
     {
-        DbContextOptionsBuilder<SDSFinderContext> optionsBuilder = new();
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
+        public SDSFinderContext CreateDbContext(string[] args)
         {
+            DbContextOptionsBuilder<SDSFinderContext> optionsBuilder = new();
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
+            {
             optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
-        }
-        else
-        {
+            }
+            else
+            {
             optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
-        }
+            }
 
             return new SDSFinderContext(optionsBuilder.Options);
         }
