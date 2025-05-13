@@ -4,52 +4,33 @@ using SDSFinder.EFModels;
 
 namespace SDSFinder.EFContexts;
 
-public partial class SDSFinderContext : DbContext
-{
-    public SDSFinderContext()
+    public partial class SDSFinderContext : DbContext
     {
-    }
-
-    public SDSFinderContext(DbContextOptions<SDSFinderContext> options)
-        : base(options)
-    {
-    }
-
-    public virtual DbSet<Document> Documents { get; set; }
-    public virtual DbSet<vwGhsLanguageAttributeLookup> vwGhsLanguageAttributeLookup { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
+        public SDSFinderContext()
         {
         }
-    }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<Document>(entity =>
+        public SDSFinderContext(DbContextOptions<SDSFinderContext> options)
+            : base(options)
         {
-            entity.HasKey(e => e.Id).HasName("PK_DocumentNew");
+            this.ChangeTracker.LazyLoadingEnabled = true;
+        }
 
-            entity.ToTable("Document");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
-            entity.Property(e => e.FileLocation).HasMaxLength(300);
-            entity.Property(e => e.FileName).HasMaxLength(100);
-            entity.Property(e => e.IsDeleted)
-                .HasMaxLength(10)
-                .IsFixedLength();
-            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
-            entity.Property(e => e.SafetyDocumentId).HasMaxLength(128);
-        });
-
-        modelBuilder.Entity<vwGhsLanguageAttributeLookup>(entity =>
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            entity.ToView("vw_GHS_Language_AttributeLookup");
-        });
+            if (!optionsBuilder.IsConfigured)
+            {
+            }
+        }
 
-        OnModelCreatingPartial(modelBuilder);
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+
+
+            OnModelCreatingPartial(modelBuilder);
+        }
+        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
@@ -57,14 +38,11 @@ public partial class SDSFinderContext : DbContext
     {
         public SDSFinderContext CreateDbContext(string[] args)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<SDSFinderContext>();
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
             {
-                optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false;");
             }
             else
             {
-                optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false;");
             }
 
             return new SDSFinderContext(optionsBuilder.Options);
