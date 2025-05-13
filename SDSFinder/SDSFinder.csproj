@@ -3,22 +3,24 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	  <OutputPath>C:\Projects\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include=".template.config\template.json" />
+    <Compile Remove="Controllers\**" />
+    <Content Remove="Controllers\**" />
+    <EmbeddedResource Remove="Controllers\**" />
+    <None Remove="Controllers\**" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DevExpress.Blazor" Version="23.1.5" />
-    <PackageReference Include="Indium.Common" Version="2.2.0" />
+    <PackageReference Include="Indium.Common" Version="1.1.412" />
     <PackageReference Include="Indium.Components" Version="1.0.554" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.15">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.15" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.15">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -47,11 +49,17 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\" />
-    <Folder Include="Controllers\" />
+    <Folder Include="EFContexts\Migrations\" />
     <Folder Include="EFContexts\Migrations\" />
     <Folder Include="EFModels\Configurations\" />
     <Folder Include="EFModels\DataBindings\" />
-    <Folder Include="Modules\" />
+    <Folder Include="Components\" />
+    <Folder Include="EFModels\Configurations\" />
+    <Folder Include="EFModels\DataBindings\" />
+    <Folder Include="Modules\Repositories\" />
+    <Folder Include="Modules\Services\" />
+    <Folder Include="Workflow\" />
+    <Folder Include="SQL\" />
     <Folder Include="Workflow\" />
     <Folder Include="SQL\" />
   </ItemGroup>
