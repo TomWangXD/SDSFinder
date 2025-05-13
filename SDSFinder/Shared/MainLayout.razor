@@ -1,0 +1,72 @@
+﻿@using DevExpress.Blazor
+
+@using Indium.Common.DataTransferObjects
+@using Indium.Common.EFContexts
+@using Indium.Common.Models
+@using Indium.Components
+@using Indium.Components.Layout
+@using Indium.Components.Assets
+
+@inherits LayoutComponentBase
+
+@inject NavigationManager NavigationManager
+@inject IConfiguration Config
+@inject CommonContext Context
+
+<IndiumThemeProvider DarkMode="false" IncludeTypography="true"/>
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<div class="MainLayout">
+    <MudLayout>
+        <Header Title="SDSFinder" TabList="@Items" AssumeVisibility=true />
+        <MudMainContent Class="page">
+            @Body
+        </MudMainContent>
+        <Footer ApplicationID=@AppId />
+    </MudLayout>
+    <TrafficCount TrafficCountUri="@TrafficCountUri" />
+</div>
+
+@code {
+    [CascadingParameter]
+    public LoginModel AdInfo { get; set; } = null!;
+
+
+    //TODO: We are no longer using DevExpress for the header so DxMenuDataMapping will soon be obsolete
+#pragma warning disable
+    List<DxMenuDataMapping> Items = new List<DxMenuDataMapping>() {
+        new() {
+            Key = "0",
+            Name = "Index",
+            Text = "Home",
+            NavigateUrl = ""
+        }
+    };
+#pragma warning restore
+
+    private int? AppId = null;
+
+    string TrafficCountUri = "";
+
+    protected override void OnInitialized()
+    {
+        string AppName = Config["ApplicationTitle"] ?? string.Empty;
+        if (NavigationManager.BaseUri.Contains("ica.com"))
+        {
+            string tempUri = Config["APIs:TrafficCount"] ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(tempUri))
+            {
+                TrafficCountUri = $"{tempUri}/{AppName}";
+            }
+        }
+        if (!string.IsNullOrWhiteSpace(AppName))
+        {
+            AppId = Context.CmApplicationMasters.Where(app => app.DisplayName == AppName).Select(app => app.Id).FirstOrDefault();
+            AppId = AppId == 0 ? null : AppId;
+        }
+
+        base.OnInitialized();
+    }
+}
+
