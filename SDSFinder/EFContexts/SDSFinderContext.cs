@@ -32,8 +32,8 @@ namespace SDSFinder.EFContexts;
         {
             base.OnModelCreating(modelBuilder);
 
-            entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
-        });
+            // Entity configurations are at /EFContexts/Configurations
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
             OnModelCreatingPartial(modelBuilder);
         }
