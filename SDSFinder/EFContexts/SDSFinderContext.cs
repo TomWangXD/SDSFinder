@@ -1,56 +1,37 @@
-﻿using Microsoft.EntityFrameworkCore.Design;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using SDSFinder.EFModels;
 
-namespace SDSFinder.EFContexts
+namespace SDSFinder.EFContexts;
+
+public partial class SDSFinderContext : DbContext
 {
-    public partial class SDSFinderContext : DbContext
+    public SDSFinderContext()
     {
-        public SDSFinderContext()
-        {
-        }
-
-        public SDSFinderContext(DbContextOptions<SDSFinderContext> options)
-            : base(options)
-        {
-            this.ChangeTracker.LazyLoadingEnabled = true;
-        }
-
-        // Add DbSets here
-        //public virtual DbSet<object> Table { get; set; } = null!;
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-            }
-        }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            // Entity configurations are at /EFContexts/Configurations
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-
-            OnModelCreatingPartial(modelBuilder);
-        }
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 
-    public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
+    public SDSFinderContext(DbContextOptions<SDSFinderContext> options)
+        : base(options)
     {
-        public SDSFinderContext CreateDbContext(string[] args)
-        {
-            DbContextOptionsBuilder<SDSFinderContext> optionsBuilder = new();
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
-            {
-                optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;");
-            }
-            else
-            {
-                optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;");
-            }
-
-            return new SDSFinderContext(optionsBuilder.Options);
-        }
     }
+
+    public virtual DbSet<Document> Documents { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("Name=app");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Document>(entity =>
+        {
+            entity.HasKey(e => e.DocumentId).HasName("PK__Document__1ABEEF0FFBCA7937");
+
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
+        });
+
+        OnModelCreatingPartial(modelBuilder);
+    }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }
