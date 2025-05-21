@@ -56,7 +56,6 @@
     <Folder Include="Components\" />
     <Folder Include="EFModels\Configurations\" />
     <Folder Include="EFModels\DataBindings\" />
-    <Folder Include="Modules\Repositories\" />
     <Folder Include="Modules\Services\" />
     <Folder Include="SQL\v1.0\" />
     <Folder Include="Workflow\" />    
