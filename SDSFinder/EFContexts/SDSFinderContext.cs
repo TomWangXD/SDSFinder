@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using SDSFinder.EFModels;
 
@@ -47,5 +49,23 @@ namespace SDSFinder.EFContexts;
 
             return new SDSFinderContext(optionsBuilder.Options);
         }
+    }
+}
+
+public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
+{
+    public SDSFinderContext CreateDbContext(string[] args)
+    {
+        DbContextOptionsBuilder<SDSFinderContext> optionsBuilder = new();
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
+        {
+            optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;");
+        }
+        else
+        {
+            optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;");
+        }
+
+        return new SDSFinderContext(optionsBuilder.Options);
     }
 }
