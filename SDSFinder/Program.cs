@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using MudBlazor.Services;
 using SDSFinder.EFContexts;
 
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Check out the differences between Mvc, ControllersWithViews, Controller, and RazorPages:
