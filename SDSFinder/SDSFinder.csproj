@@ -58,9 +58,7 @@
     <Folder Include="EFModels\DataBindings\" />
     <Folder Include="Modules\Repositories\" />
     <Folder Include="Modules\Services\" />
-    <Folder Include="Workflow\" />
-    <Folder Include="SQL\" />
-    <Folder Include="Workflow\" />
-    <Folder Include="SQL\" />
+    <Folder Include="SQL\v1.0\" />
+    <Folder Include="Workflow\" />    
   </ItemGroup>
 </Project>
