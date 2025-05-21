@@ -19,7 +19,11 @@ public partial class SDSFinderContext : DbContext
     public virtual DbSet<Document> Documents { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=app");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
