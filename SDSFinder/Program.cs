@@ -5,6 +5,7 @@ using Indium.Common.Modules.Auth;
 using Microsoft.AspNetCore.Authorization;
 using MudBlazor.Services;
 using SDSFinder.EFContexts;
+using SDSFinder.Modules.Repositories;
 
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -28,6 +29,8 @@ builder.Services.Configure<DevExpress.Blazor.Configuration.GlobalOptions>(option
 
 // Indium services and repositories
 builder.Services.AddScoped<TimeZoneService>();
+
+builder.Services.AddScoped<ISiteRepository, SiteRepository>();
 
 // Authentication and Authorization services
 builder.Services.AddScoped<IAuthorizationHandler, ActiveDirectoryAuthorizationHandler>();
