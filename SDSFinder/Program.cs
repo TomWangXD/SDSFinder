@@ -36,17 +36,6 @@ builder.Services.Configure<DevExpress.Blazor.Configuration.GlobalOptions>(option
 // Indium services and repositories
 builder.Services.AddScoped<TimeZoneService>();
 
-builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
-builder.Services.AddScoped<IItemRepository, ItemRepository>();
-builder.Services.AddScoped<IJobRepository, JobRepository>();
-builder.Services.AddScoped<ISiteRepository, SiteRepository>();
-
-builder.Services.AddScoped<IDocumentService, DocumentService>();
-builder.Services.AddScoped<IItemService, ItemService>();
-builder.Services.AddScoped<IJobService, JobService>();
-builder.Services.AddScoped<ISiteService, SiteService>();
-
-
 // Authentication and Authorization services
 builder.Services.AddScoped<IAuthorizationHandler, ActiveDirectoryAuthorizationHandler>();
 builder.Services.AddScoped<IPermissionService, ActiveDirectoryPermissionService>();
