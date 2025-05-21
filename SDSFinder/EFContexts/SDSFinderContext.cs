@@ -59,11 +59,11 @@ public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SD
         DbContextOptionsBuilder<SDSFinderContext> optionsBuilder = new();
         if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
         {
-            optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;");
+            optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
         }
         else
         {
-            optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;");
+            optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
         }
 
         return new SDSFinderContext(optionsBuilder.Options);
