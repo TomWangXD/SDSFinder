@@ -9,26 +9,18 @@ using SDSFinder.Modules.Repositories;
 using Moq;
 using System.Threading;
 using Microsoft.EntityFrameworkCore;
-using SDSFinder.EFModels;
-using MudBlazor;
-using DevExpress.Blazor.Internal;
 
 namespace SDSFinder.Tests.Repositories;
 
 [TestClass]
 public class JobRepositoryTests
 {
-    private Mock<IDbContextFactory<IndAppContext>> StubAppContextFactory { get; set; } = null!;
-    private Mock<ISnackbar> Snackbar { get; set; } = null!;
     [TestInitialize]
     public void Init()
     {
         // IND_APPContext
-        StubAppContextFactory = new Mock<IDbContextFactory<IndAppContext>>();
         StubAppContextFactory.Setup(f => f.CreateDbContext())
-        .Returns(() => new IndAppContext(new DbContextOptionsBuilder<IndAppContext>().UseInMemoryDatabase("InMemoryTest", b => b.EnableNullChecks(false)).Options));
         StubAppContextFactory.Setup(f => f.CreateDbContextAsync(It.IsAny<CancellationToken>()))
-         .ReturnsAsync(() => new IndAppContext(new DbContextOptionsBuilder<IndAppContext>().UseInMemoryDatabase("InMemoryTest", b => b.EnableNullChecks(false)).Options));
     }
 
     [TestCleanup]
@@ -41,7 +33,6 @@ public class JobRepositoryTests
         await appContext.SaveChangesAsync();
     }
 
-    public async Task<IndAppContext> AddJobToMockDb(IndAppContext appContext)
     {
         JobMst job = new()
         {
@@ -59,7 +50,6 @@ public class JobRepositoryTests
     [TestMethod]
     public async Task ValidateJobSuccess()
     {
-        IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
         AppContext = await AddJobToMockDb(AppContext);
         JobRepository repo = new();
@@ -74,7 +64,6 @@ public class JobRepositoryTests
     [TestMethod]
     public async Task ValidateJobFailure()
     {
-        IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
         AppContext = await AddJobToMockDb(AppContext);
         JobRepository repo = new();
@@ -89,7 +78,6 @@ public class JobRepositoryTests
     [TestMethod]
     public async Task ValidateJobPartialMatchSiteFailure()
     {
-        IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
         AppContext = await AddJobToMockDb(AppContext);
         JobRepository repo = new();
@@ -104,8 +92,7 @@ public class JobRepositoryTests
     [TestMethod]
     public async Task ValidateJobPartialMatchJobFailure()
     {
-        IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
-        
+
         AppContext = await AddJobToMockDb(AppContext);
         JobRepository repo = new();
 
