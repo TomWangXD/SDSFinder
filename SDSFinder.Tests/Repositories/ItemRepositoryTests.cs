@@ -19,6 +19,7 @@ namespace SDSFinder.Tests.Repositories
     [TestClass]
     public class ItemRepositoryTests
     {
+        private Mock<IDbContextFactory<IND_APPContext>> StubAppContextFactory { get; set; } = null!;
 
         [TestInitialize]
         public void Init()
@@ -54,7 +55,7 @@ namespace SDSFinder.Tests.Repositories
 
         [TestMethod]
         public async Task ValidateItemSuccess()
-        {
+            {
             IND_APPContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
             appContext.ItemGlbls.Add(item);

@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using Indium.Infor.EFContexts;
+using Indium.Infor.EFModels;
+using System.Linq.Expressions;
 
 namespace SDSFinder.Modules.Repositories
 {
