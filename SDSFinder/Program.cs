@@ -1,6 +1,9 @@
 using DevExpress.Blazor;
+
 using Indium.Common.EFContexts;
 using Indium.Common.Modules;
+using Indium.Infor.EFContexts;
+
 using Indium.Common.Modules.Auth;
 using Microsoft.AspNetCore.Authorization;
 using MudBlazor.Services;
@@ -31,6 +34,7 @@ builder.Services.Configure<DevExpress.Blazor.Configuration.GlobalOptions>(option
 builder.Services.AddScoped<TimeZoneService>();
 
 builder.Services.AddScoped<ISiteRepository, SiteRepository>();
+builder.Services.AddScoped<IJobRepository, JobRepository>();
 
 // Authentication and Authorization services
 builder.Services.AddScoped<IAuthorizationHandler, ActiveDirectoryAuthorizationHandler>();
