@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SDSFinder.Modules.Repositories;
+using SDSFinder.Modules.Repositories.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,8 +42,11 @@ namespace SDSFinder.Tests.Repositories
         {
             {
 
+            appContext.ItemGlbls.Add(item);
 
+            await appContext.SaveChangesAsync();
 
+            return appContext;
         }
 
     }
