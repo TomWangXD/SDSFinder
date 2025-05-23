@@ -58,9 +58,13 @@ namespace SDSFinder.Tests.Repositories
             {
             IND_APPContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
-            appContext.ItemGlbls.Add(item);
+        [TestMethod]
+        public async Task GetListBy_ReturnsAllMatchingItems()
+        {
+            var context = await AddItemsToMockDb(StubAppContextFactory.Object.CreateDbContext());
+            var repo = new ItemRepository();
 
-            await appContext.SaveChangesAsync();
+            var results = await repo.GetListBy(x => x.Item.StartsWith("0"), context);
 
             var validationResult = await repo.ValidateItem(item, AppContext);
             Assert.IsTrue(validationResult);
