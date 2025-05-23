@@ -8,6 +8,11 @@ namespace SDSFinder.Modules.Repositories.Implementations
 {
     public class ItemRepository : IItemRepository
     {
+        public async Task<bool> ValidateItem(string item, IND_APPContext context)
+        {
+            bool result = await context.ItemGlbls.AnyAsync(x => x.Item == item);
+            return result;
+        }
 
         public async Task<ItemGlbl?> Get(string item, IND_APPContext context)
         {
