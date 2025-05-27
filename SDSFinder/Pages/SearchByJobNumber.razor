@@ -9,32 +9,15 @@
 @inject ILogger<Index> Logger
 @inject ISnackbar Snackbar
 @inject ISiteService siteService
-@inject IJobService jobService
-@inject IItemService itemService
-@inject IDocumentService documentService
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
-    <div class="search-section">
-        <MudGrid>
-            <MudItem xs="4">
-                <div class="label-font-size">Site</div>
-                <MudAutocomplete 
-                @bind-Value="@(site)"
-                T="CmSiteMaster"
-                Required="true"
-                Margin="@Margin.Dense"
-                Dense="true"
-                Variant="Variant.Filled"
-                SearchFunc="@(e => GetSites(e))"
-                ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
-                MaxItems="100"
-                Clearable="true"
-                ErrorText="Please choose a site" 
-                Style="padding-top: 4px"
-                AnchorOrigin="Origin.CenterCenter"/>
-                <MudItem>
-                    <br />
-                </MudItem>
-            </MudItem>
+        <div class="label-font-size">Site</div>
+        T="CmSiteMaster"
+        Required="true"
+        Margin="@Margin.Dense"
+        Dense="true"
+        Variant="Variant.Filled"
+        ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
+        MaxItems="100"
+        Clearable="true"
 
 
             <MudItem xs="4">
@@ -61,12 +44,12 @@
                 <MudItem>
                     <br/>
                 </MudItem>
-            </MudItem>
+    </MudItem>
         </MudGrid>
     </div>
     <div class="content-section">
         <SDSSearchResultTable TableResults="TableResults"></SDSSearchResultTable>
-    </div>
+</div>
 </MudContainer>
 
 
@@ -109,8 +92,6 @@
     {
         try
         {
-            ReadOnly = true;
-
         }
         catch (Exception ex)
         {
@@ -142,7 +123,7 @@
         {
             snackbar.Add($"No {site} jobs found for job number {fullJob}", Severity.Info);
             await jobRef.Clear();
-        }
+    }
     }
     private async Task GetTableResult(string jobNumber, string site)
     {
@@ -213,11 +194,6 @@
     {
         try
         {
-            ReadOnly = true;
-            if (site is not null)
-            {
-                ReadOnly = false;
-            }
         }
         catch (Exception ex)
         {
