@@ -9,15 +9,25 @@
 @inject ILogger<Index> Logger
 @inject ISnackbar Snackbar
 @inject ISiteService siteService
+
+<div class="SearchByJobNumber">
+    <MudItem xs="12" sm="6" md="4" lg="4" xl="4">
+        <div class="label-font-size">Job Number</div>
+        <MudTextField Value="jobNumber" ReadOnly="@true" Variant="Variant.Filled" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="4" xl="4">
         <div class="label-font-size">Site</div>
+        <MudAutocomplete @bind-Value="@(site)"
         T="CmSiteMaster"
         Required="true"
         Margin="@Margin.Dense"
         Dense="true"
         Variant="Variant.Filled"
+        SearchFunc="(e => GetSites(e))"
         ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
         MaxItems="100"
         Clearable="true"
+        ErrorText="Please choose a site" />
 
     </MudItem>
 </div>
