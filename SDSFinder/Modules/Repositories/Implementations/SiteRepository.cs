@@ -1,4 +1,9 @@
 ﻿
+using Indium.Infor.EFContexts;
+using Indium.Infor.EFModels;
+using Microsoft.EntityFrameworkCore.Internal;
+using System.Linq.Expressions;
+
 namespace SDSFinder.Modules.Repositories
 {
     public class SiteRepository : ISiteRepository    
@@ -9,13 +14,18 @@ namespace SDSFinder.Modules.Repositories
         {
             _context = context;
         }
-        public async Task<List<CmSiteMaster>> GetAll()
+        public async Task<List<CmSiteMaster>> GetAll(CommonContext context)
         {
-            List<CmSiteMaster> sites = await _context.CmSiteMasters
+            List<CmSiteMaster> sites = await context.CmSiteMasters
                 .OrderBy(x => x.SiteCode)
                 .AsNoTracking()
                 .ToListAsync();
 
+            return sites;
+        }
+        public async Task<List<CmSiteMaster>> GetLimitedListBy(Expression<Func<CmSiteMaster, bool>> selector, int take, CommonContext context)
+        {
+            List<CmSiteMaster> sites = await context.CmSiteMasters.Where(selector).OrderBy(x => x.SiteCode).Take(take).ToListAsync();
             return sites;
         }
     }
