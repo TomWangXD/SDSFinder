@@ -15,6 +15,7 @@ namespace SDSFinder.Modules.Repositories
         }
         public async Task<List<CmSiteMaster>> GetAll(CommonContext context)
         {
+            List<CmSiteMaster> sites = await _context.CmSiteMasters
                 .OrderBy(x => x.SiteCode)
                 .AsNoTracking()
                 .ToListAsync();
