@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using MudBlazor.Services;
 using SDSFinder.EFContexts;
 using SDSFinder.Modules.Repositories;
+using SDSFinder.Modules.Services;
 
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -35,6 +36,7 @@ builder.Services.AddScoped<TimeZoneService>();
 
 builder.Services.AddScoped<ISiteRepository, SiteRepository>();
 builder.Services.AddScoped<IJobRepository, JobRepository>();
+builder.Services.AddScoped<ISiteService, SiteService>();
 
 // Authentication and Authorization services
 builder.Services.AddScoped<IAuthorizationHandler, ActiveDirectoryAuthorizationHandler>();
