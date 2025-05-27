@@ -1,0 +1,106 @@
+﻿@using SDSFinder.Modules.Services
+
+@page "/"
+
+@inject IJSRuntime JSRuntime
+@inject ILogger<Index> Logger
+@inject MudBlazor.ISnackbar Snackbar
+@inject ISiteService siteService
+
+<div class="SearchByJobNumber">
+    <MudItem xs="12" sm="6" md="4" lg="4" xl="4">
+        <div class="label-font-size">Job Number</div>
+        <MudTextField Value="jobNumber" ReadOnly="@true" Variant="Variant.Filled" />
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4" lg="4" xl="4">
+        <div class="label-font-size">Site</div>
+        <MudAutocomplete @bind-Value="@(site)"
+        T="CmSiteMaster"
+        Required="true"
+        Margin="@Margin.Dense"
+        Dense="true"
+        Variant="Variant.Filled"
+        SearchFunc="(e => GetSites(e))"
+        ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
+        MaxItems="100"
+        Clearable="true"
+        ErrorText="Please choose a site" />
+
+    </MudItem>
+</div>
+
+
+@code {
+    /// <summary>
+    /// This is a function that gets called when the page is first rendered.
+    /// This page can be cached and may not always run when changing pages, just the first time within the instance
+    /// </summary>
+
+    #region  Properties
+    private string? jobNumber { get; set; }
+    private CmSiteMaster? site
+    {
+        get
+        {
+            return _site;
+        }
+        set
+        {
+            if(value is not null && _site != value)
+            {
+                _site = value;
+            }
+            else
+            {
+                _site = null;
+            }
+        }
+    }
+    private CmSiteMaster? _site = null;
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // DELETE ME IF NOT USED
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("An Error Occurred", Severity.Error);
+            Logger.LogError(ex.ToString());
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+    }
+
+    private async Task<IEnumerable<CmSiteMaster>> GetSites(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return await siteService.GetAll();
+        }
+        else
+        {
+            return await siteService.GetLimitedListBy(x => x.SiteCode.Contains(value) || x.SiteName.Contains(value), 100);
+        }
+
+    }
+
+    /// <summary>
+    /// This is a function that gets called any time that MainLayout.razor re-renders.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        try
+        {
+            // DELETE ME IF NOT USED
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("An Error Occurred", Severity.Error);
+            Logger.LogError(ex.ToString());
+        }
+    }
+
+
+}
