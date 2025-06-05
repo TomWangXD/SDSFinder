@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using SDSFinder.EFModels;
 
@@ -18,6 +16,7 @@ public partial class SDSFinderContext : DbContext
     }
 
     public virtual DbSet<Document> Documents { get; set; }
+    public virtual DbSet<vwGhsLanguageAttributeLookup> vwGhsLanguageAttributeLookup { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -33,6 +32,11 @@ public partial class SDSFinderContext : DbContext
             entity.HasKey(e => e.DocumentId).HasName("PK__Document__1ABEEF0FFBCA7937");
 
             entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
+        });
+
+        modelBuilder.Entity<vwGhsLanguageAttributeLookup>(entity =>
+        {
+            entity.ToView("vw_GHS_Language_AttributeLookup");
         });
 
         OnModelCreatingPartial(modelBuilder);
