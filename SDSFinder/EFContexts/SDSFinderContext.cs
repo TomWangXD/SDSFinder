@@ -49,6 +49,11 @@ namespace SDSFinder.EFContexts;
             entity.ToView("vw_GHS_Language_AttributeLookup");
         });
 
+        modelBuilder.Entity<vwGhsLanguageAttributeLookup>(entity =>
+        {
+            entity.ToView("vw_GHS_Language_AttributeLookup");
+        });
+
         OnModelCreatingPartial(modelBuilder);
     }
 
