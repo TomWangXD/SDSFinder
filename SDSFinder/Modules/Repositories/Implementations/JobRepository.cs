@@ -1,4 +1,7 @@
-﻿
+﻿using SDSFinder.EFContexts;
+using SDSFinder.EFModels;
+
+
 namespace SDSFinder.Modules.Repositories;
 
 public class JobRepository : IJobRepository

@@ -1,16 +1,16 @@
-﻿using Indium.Infor.EFContexts;
-using Indium.Infor.EFModels;
+﻿using SDSFinder.EFContexts;
+using SDSFinder.EFModels;
 using System.Linq.Expressions;
 
 namespace SDSFinder.Modules.Repositories
 {
     public interface IItemRepository
     {
-        Task<bool> ValidateItem(string item, IND_APPContext context);
-        Task<ItemGlbl?> Get(string item, IND_APPContext context);
-        Task<ItemGlbl?> GetBy(Expression<Func<ItemGlbl, bool>> selector, IND_APPContext context);
-        Task<List<ItemGlbl>> GetLimitedListBy(Expression<Func<ItemGlbl, bool>> selector, int take, IND_APPContext context);
-        Task<List<ItemGlbl>> GetListBy(Expression<Func<ItemGlbl, bool>> selector, IND_APPContext context);
+        Task<bool> ValidateItem(string item, IndAppContext context);
+        Task<ItemGlbl?> Get(string item, IndAppContext context);
+        Task<ItemGlbl?> GetBy(Expression<Func<ItemGlbl, bool>> selector, IndAppContext context);
+        Task<List<ItemGlbl>> GetLimitedListBy(Expression<Func<ItemGlbl, bool>> selector, int take, IndAppContext context);
+        Task<List<ItemGlbl>> GetListBy(Expression<Func<ItemGlbl, bool>> selector, IndAppContext context);
     
     }
 }

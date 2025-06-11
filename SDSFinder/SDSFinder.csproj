@@ -51,7 +51,6 @@
     <Folder Include="EFContexts\Migrations\" />
     <Folder Include="EFModels\Configurations\" />
     <Folder Include="EFModels\DataBindings\" />
-    <Folder Include="Components\" />
     <Folder Include="EFModels\Configurations\" />
     <Folder Include="EFModels\DataBindings\" />
     <Folder Include="SQL\v1.0\" />
