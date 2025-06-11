@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using SDSFinder.EFModels;
 
@@ -12,21 +10,21 @@ namespace SDSFinder.EFContexts;
         {
         }
 
-        public SDSFinderContext(DbContextOptions<SDSFinderContext> options)
-            : base(options)
-        {
+    public SDSFinderContext(DbContextOptions<SDSFinderContext> options)
+        : base(options)
+    {
             this.ChangeTracker.LazyLoadingEnabled = true;
-        }
+    }
 
-        // Add DbSets here
-        //public virtual DbSet<object> Table { get; set; } = null!;
+    public virtual DbSet<Document> Documents { get; set; }
+    public virtual DbSet<vwGhsLanguageAttributeLookup> vwGhsLanguageAttributeLookup { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        if (!optionsBuilder.IsConfigured)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-            }
         }
+    }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -35,11 +33,26 @@ namespace SDSFinder.EFContexts;
             // Entity configurations are at /EFContexts/Configurations
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-            OnModelCreatingPartial(modelBuilder);
-        }
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.FileLocation).HasMaxLength(300);
+            entity.Property(e => e.FileName).HasMaxLength(100);
+            entity.Property(e => e.IsDeleted)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.SafetyDocumentId).HasMaxLength(128);
+        });
+
+        modelBuilder.Entity<vwGhsLanguageAttributeLookup>(entity =>
+        {
+            entity.ToView("vw_GHS_Language_AttributeLookup");
+        });
+
+        OnModelCreatingPartial(modelBuilder);
     }
 
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 
@@ -47,35 +60,17 @@ namespace SDSFinder.EFContexts;
     {
         public SDSFinderContext CreateDbContext(string[] args)
         {
-            DbContextOptionsBuilder<SDSFinderContext> optionsBuilder = new();
+            var optionsBuilder = new DbContextOptionsBuilder<SDSFinderContext>();
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
             {
-            optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
+                optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false;");
             }
             else
             {
-            optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
+                optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false;");
             }
 
             return new SDSFinderContext(optionsBuilder.Options);
         }
-    }
-}
-
-public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
-{
-    public SDSFinderContext CreateDbContext(string[] args)
-    {
-        DbContextOptionsBuilder<SDSFinderContext> optionsBuilder = new();
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
-        {
-            optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
-        }
-        else
-        {
-            optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
-        }
-
-        return new SDSFinderContext(optionsBuilder.Options);
     }
 }
