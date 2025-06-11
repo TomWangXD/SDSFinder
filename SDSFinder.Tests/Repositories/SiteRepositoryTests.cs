@@ -62,6 +62,7 @@ namespace SDSFinder.Tests.Repositories
             var repo = new SiteRepository(context);
 
             // Act
+            List<CmSiteMaster> sites = await repo.GetAll(context);
 
             // Assert
             Assert.IsNotNull(sites);

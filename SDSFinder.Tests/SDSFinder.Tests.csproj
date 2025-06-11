@@ -3,11 +3,12 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
 
-    <IsPackable>false</IsPackable>
+        <IsPackable>false</IsPackable>
         <IsPublishable>false</IsPublishable>
-  </PropertyGroup>
+    </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="bunit" Version="1.27.17" />
+        <PackageReference Include="Indium.Infor" Version="1.1.0-alpha.47" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.15" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />
         <PackageReference Include="Moq" Version="4.18.2" />
@@ -18,13 +19,13 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
     </ItemGroup>
-  <ItemGroup>
+    <ItemGroup>
       <Folder Include="Stub\" />
       <Folder Include="Stub\" />
-  </ItemGroup>
+    </ItemGroup>
 
-  <ItemGroup>
+    <ItemGroup>
       <ProjectReference Include="..\SDSFinder\SDSFinder.csproj" />
-  </ItemGroup>
+    </ItemGroup>
 
 </Project>

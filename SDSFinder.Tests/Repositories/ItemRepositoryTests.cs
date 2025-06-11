@@ -19,16 +19,15 @@ namespace SDSFinder.Tests.Repositories
     [TestClass]
     public class ItemRepositoryTests
     {
+        private Mock<IDbContextFactory<IndAppContext>> StubAppContextFactory { get; set; } = null!;
 
         [TestInitialize]
         public void Init()
         {
             // IND_APPContext
-            StubAppContextFactory = new Mock<IDbContextFactory<IND_APPContext>>();
+            StubAppContextFactory = new Mock<IDbContextFactory<IndAppContext>>();
             StubAppContextFactory.Setup(f => f.CreateDbContext())
-            .Returns(() => new IND_APPContext(new DbContextOptionsBuilder<IND_APPContext>().UseInMemoryDatabase("InMemoryTest", b => b.EnableNullChecks(false)).Options));
             StubAppContextFactory.Setup(f => f.CreateDbContextAsync(It.IsAny<CancellationToken>()))
-             .ReturnsAsync(() => new IND_APPContext(new DbContextOptionsBuilder<IND_APPContext>().UseInMemoryDatabase("InMemoryTest", b => b.EnableNullChecks(false)).Options));
         }
 
         [TestCleanup]
@@ -41,7 +40,6 @@ namespace SDSFinder.Tests.Repositories
             await appContext.SaveChangesAsync();
         }
 
-        public async Task<IND_APPContext> AddItemsToMockDb(IND_APPContext appContext)
         {
             appContext.ItemGlbls.AddRange(
                 new ItemGlbl { Item = "010000", Description = "Desc A" },
@@ -55,11 +53,8 @@ namespace SDSFinder.Tests.Repositories
         [TestMethod]
         public async Task ValidateItemSuccess()
         {
-            IND_APPContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
-            appContext.ItemGlbls.Add(item);
 
-            await appContext.SaveChangesAsync();
 
             var validationResult = await repo.ValidateItem(item, AppContext);
             Assert.IsTrue(validationResult);
@@ -68,7 +63,6 @@ namespace SDSFinder.Tests.Repositories
         [TestMethod]
         public async Task ValidateItemFailure()
         {
-            IND_APPContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
             AppContext = await AddItemsToMockDb(AppContext);
             ItemRepository repo = new();

@@ -60,6 +60,11 @@
                 TrafficCountUri = $"{tempUri}/{AppName}";
             }
         }
+        // if (!string.IsNullOrWhiteSpace(AppName))
+        // {
+        //     AppId = Context.CmApplicationMasters.Where(app => app.DisplayName == AppName).Select(app => app.Id).FirstOrDefault();
+        //     AppId = AppId == 0 ? null : AppId;
+        // }
 
         base.OnInitialized();
     }
