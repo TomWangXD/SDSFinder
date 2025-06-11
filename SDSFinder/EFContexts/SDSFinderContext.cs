@@ -29,6 +29,8 @@ namespace SDSFinder.EFContexts;
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 
+            entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
+        });
 
             OnModelCreatingPartial(modelBuilder);
         }
@@ -36,20 +38,6 @@ namespace SDSFinder.EFContexts;
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-    public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
-    {
-        public SDSFinderContext CreateDbContext(string[] args)
-        {
-            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
-            {
-            }
-            else
-            {
-            }
-
-            return new SDSFinderContext(optionsBuilder.Options);
-        }
-    }
 }
 
 public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
@@ -66,6 +54,7 @@ public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SD
             optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
         }
 
-        return new SDSFinderContext(optionsBuilder.Options);
+            return new SDSFinderContext(optionsBuilder.Options);
+        }
     }
 }

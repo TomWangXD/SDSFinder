@@ -19,38 +19,8 @@
         MaxItems="100"
         Clearable="true"
 
-
-            <MudItem xs="4">
-                <div class="label-font-size">Job Number</div>
-                <MudTextField T="string" 
-                @ref="jobRef" 
-                @bind-value="jobNumber" 
-                ReadOnly="@ReadOnly" 
-                Text="@jobNumber"
-                MaxLength="10"
-                TextChanged="(async(value) => {
-                                    jobNumber = value;})"
-                OnBlur="@(async() => await JobNumberValidation(jobNumber, jobRef, site.SiteCode, Snackbar))"
-                Variant="Variant.Filled" 
-                />       
-                <MudItem>
-                    <br />
-                </MudItem>
-            </MudItem>
-            <MudItem xs="4" Class="button">
-                <MudButton Variant="Variant.Filled" Size="Size.Large" Disabled="@ReadOnly" OnClick="@(async() => await GetTableResult(jobNumber, site.SiteCode))">
-                    <MudText>Search</MudText>
-                </MudButton>
-                <MudItem>
-                    <br/>
-                </MudItem>
     </MudItem>
-        </MudGrid>
-    </div>
-    <div class="content-section">
-        <SDSSearchResultTable TableResults="TableResults"></SDSSearchResultTable>
 </div>
-</MudContainer>
 
 
 @code {
@@ -92,6 +62,7 @@
     {
         try
         {
+            // DELETE ME IF NOT USED
         }
         catch (Exception ex)
         {
@@ -114,22 +85,7 @@
 
     }
 
-    private async Task  JobNumberValidation(string jobNumber, MudTextField<string> jobRef, string site, ISnackbar snackbar)
-    {
-
-        var fullJob = await jobService.ExpandJob(jobNumber);
-        var validationResult = await jobService.ValidateJob(fullJob, site);
-        if (validationResult == false)
-        {
-            snackbar.Add($"No {site} jobs found for job number {fullJob}", Severity.Info);
-            await jobRef.Clear();
     }
-    }
-    private async Task GetTableResult(string jobNumber, string site)
-    {
-        if(!string.IsNullOrEmpty(jobNumber))
-        {
-            JobMst? job = await jobService.Get(jobNumber, site);
 
             ItemGlbl? item = await itemService.GetBy(x => x.Item == job.Item);
             List<Document> documents = await documentService.GetListBy(x => x.SafetyDocumentId.Equals(item.IndSds));
@@ -194,6 +150,7 @@
     {
         try
         {
+            // DELETE ME IF NOT USED
         }
         catch (Exception ex)
         {
