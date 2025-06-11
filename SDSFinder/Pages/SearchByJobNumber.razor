@@ -1,33 +1,73 @@
 ﻿@using SDSFinder.Modules.Services
+@using SDSFinder.EFModels
+@using SDSFinder.EFContexts
+@using MudBlazor
 
 @page "/"
 
 @inject IJSRuntime JSRuntime
 @inject ILogger<Index> Logger
-@inject MudBlazor.ISnackbar Snackbar
+@inject ISnackbar Snackbar
 @inject ISiteService siteService
+@inject IJobService jobService
+@inject IItemService itemService
+@inject IDocumentService documentService
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
+    <div class="search-section">
+        <MudGrid>
+            <MudItem xs="4">
+                <div class="label-font-size">Site</div>
+                <MudAutocomplete 
+                @bind-Value="@(site)"
+                T="CmSiteMaster"
+                Required="true"
+                Margin="@Margin.Dense"
+                Dense="true"
+                Variant="Variant.Filled"
+                SearchFunc="@(e => GetSites(e))"
+                ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
+                MaxItems="100"
+                Clearable="true"
+                ErrorText="Please choose a site" 
+                Style="padding-top: 4px"
+                AnchorOrigin="Origin.CenterCenter"/>
+                <MudItem>
+                    <br />
+                </MudItem>
+            </MudItem>
 
-<div class="SearchByJobNumber">
-    <MudItem xs="12" sm="6" md="4" lg="4" xl="4">
-        <div class="label-font-size">Job Number</div>
-        <MudTextField Value="jobNumber" ReadOnly="@true" Variant="Variant.Filled" />
-    </MudItem>
-    <MudItem xs="12" sm="6" md="4" lg="4" xl="4">
-        <div class="label-font-size">Site</div>
-        <MudAutocomplete @bind-Value="@(site)"
-        T="CmSiteMaster"
-        Required="true"
-        Margin="@Margin.Dense"
-        Dense="true"
-        Variant="Variant.Filled"
-        SearchFunc="(e => GetSites(e))"
-        ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
-        MaxItems="100"
-        Clearable="true"
-        ErrorText="Please choose a site" />
 
-    </MudItem>
-</div>
+            <MudItem xs="4">
+                <div class="label-font-size">Job Number</div>
+                <MudTextField T="string" 
+                @ref="jobRef" 
+                @bind-value="jobNumber" 
+                ReadOnly="@ReadOnly" 
+                Text="@jobNumber"
+                MaxLength="10"
+                TextChanged="(async(value) => {
+                                    jobNumber = value;})"
+                OnBlur="@(async() => await JobNumberValidation(jobNumber, jobRef, site.SiteCode, Snackbar))"
+                Variant="Variant.Filled" 
+                />       
+                <MudItem>
+                    <br />
+                </MudItem>
+            </MudItem>
+            <MudItem xs="4" Class="button">
+                <MudButton Variant="Variant.Filled" Size="Size.Large" Disabled="@ReadOnly" OnClick="@(async() => await GetTableResult(jobNumber, site.SiteCode))">
+                    <MudText>Search</MudText>
+                </MudButton>
+                <MudItem>
+                    <br/>
+                </MudItem>
+            </MudItem>
+        </MudGrid>
+    </div>
+    <div class="content-section">
+        <SDSSearchResultTable TableResults="TableResults"></SDSSearchResultTable>
+    </div>
+</MudContainer>
 
 
 @code {
@@ -37,7 +77,11 @@
     /// </summary>
 
     #region  Properties
+
     private string? jobNumber { get; set; }
+    public bool ReadOnly = false;
+    private MudTextField<string> jobRef;
+    private List<SDSTableResult?> TableResults = new();
     private CmSiteMaster? site
     {
         get
@@ -49,10 +93,12 @@
             if(value is not null && _site != value)
             {
                 _site = value;
+                ReadOnly = false;
             }
             else
             {
                 _site = null;
+                ReadOnly = true;
             }
         }
     }
@@ -63,7 +109,8 @@
     {
         try
         {
-            // DELETE ME IF NOT USED
+            ReadOnly = true;
+
         }
         catch (Exception ex)
         {
@@ -86,6 +133,79 @@
 
     }
 
+    private async Task  JobNumberValidation(string jobNumber, MudTextField<string> jobRef, string site, ISnackbar snackbar)
+    {
+
+        var fullJob = await jobService.ExpandJob(jobNumber);
+        var validationResult = await jobService.ValidateJob(fullJob, site);
+        if (validationResult == false)
+        {
+            snackbar.Add($"No {site} jobs found for job number {fullJob}", Severity.Info);
+            await jobRef.Clear();
+        }
+    }
+    private async Task GetTableResult(string jobNumber, string site)
+    {
+        if(!string.IsNullOrEmpty(jobNumber))
+        {
+            JobMst? job = await jobService.Get(jobNumber, site);
+
+            ItemGlbl? item = await itemService.GetBy(x => x.Item == job.Item);
+            List<Document> documents = await documentService.GetListBy(x => x.SafetyDocumentId.Equals(item.IndSds));
+            if (documents.Count() > 0)
+            {
+                List<SDSTableResult?> tableResults = new();
+                foreach(Document document in documents)
+                {
+                    string language = await GetLanguage(document.FileName);
+                    SDSTableResult tableResult = new()
+                    {
+                        ItemNumber = item.Item,
+                        ItemDescription = item.Description,
+                        PdfLocation = document?.FileLocation,
+                        Language = language
+                    };
+
+                    tableResults.Add(tableResult);
+
+                }
+                TableResults = tableResults;
+            }
+        }
+        else
+        {
+            TableResults = new();
+            Snackbar.Add("Please enter a Job Number", Severity.Info);
+        }
+    }
+    private async Task<string> GetLanguage(string fileName)
+    {
+        string languageCode = !String.IsNullOrWhiteSpace(fileName) && fileName.Length >= 2 ?
+        fileName.Substring(0, 2) : fileName;
+        var result = languageCode switch
+        {
+            "cs" => "",
+            "de" => "German",
+            "en" => "English",
+            "es" => "Spanish",
+            "et" => "",
+            "fi" => "Finnish",
+            "fr" => "French",
+            "hu" => "Hungarian",
+            "it" => "Italian",
+            "ms" => "Malay",
+            "no" => "Norwegian",
+            "pl" => "Polish",
+            "pt" => "Portuguese",
+            "ro" => "Romanian",
+            "ru" => "Russian",
+            "sv" => "Swedish",
+            "zf" => "Chinese (Simplified)",
+            "zh" => "Chinese",
+            _ => "Unsupported language"
+        };
+        return result;
+    }
     /// <summary>
     /// This is a function that gets called any time that MainLayout.razor re-renders.
     /// </summary>
@@ -93,7 +213,11 @@
     {
         try
         {
-            // DELETE ME IF NOT USED
+            ReadOnly = true;
+            if (site is not null)
+            {
+                ReadOnly = false;
+            }
         }
         catch (Exception ex)
         {

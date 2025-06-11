@@ -1,11 +1,12 @@
-﻿using Indium.Infor.EFContexts;
-using System.Linq.Expressions;
+﻿using SDSFinder.EFContexts;
+using SDSFinder.EFModels;
+using System.Threading.Tasks;
 
-namespace SDSFinder.Modules.Repositories
+namespace SDSFinder.Modules.Repositories;
+
+public interface IJobRepository
 {
-    public interface IJobRepository
-    {
-        Task<bool> ValidateJob(string jobNumber, string site, IND_APPContext context);
-
-    }
+    Task<bool> ValidateJob(string jobNumber, string site, IndAppContext context);
+    Task<JobMst?> Get(string jobNumber, string site, IndAppContext context);
 }
+
