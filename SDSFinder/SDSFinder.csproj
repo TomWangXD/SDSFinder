@@ -53,8 +53,10 @@
     <Folder Include="EFContexts\Migrations\" />
     <Folder Include="EFModels\Configurations\" />
     <Folder Include="EFModels\DataBindings\" />
-    <Folder Include="Modules\" />
-    <Folder Include="Workflow\" />
-    <Folder Include="SQL\" />
+    <Folder Include="Components\" />
+    <Folder Include="EFModels\Configurations\" />
+    <Folder Include="EFModels\DataBindings\" />
+    <Folder Include="SQL\v1.0\" />
+    <Folder Include="Workflow\" />    
   </ItemGroup>
 </Project>
