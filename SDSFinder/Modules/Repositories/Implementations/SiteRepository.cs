@@ -1,6 +1,5 @@
 ﻿
-using Indium.Infor.EFContexts;
-using Indium.Infor.EFModels;
+
 using Microsoft.EntityFrameworkCore.Internal;
 using System.Linq.Expressions;
 

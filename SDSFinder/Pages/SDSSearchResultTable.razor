@@ -1,0 +1,114 @@
+﻿@using System.Net.Http.Json
+@using SDSFinder.Modules.Services
+@using SDSFinder.EFModels
+@using SDSFinder.EFContexts
+@using MudBlazor
+
+@inject ILogger<Index> Logger;
+@inject IDocumentService documentService;
+@inject ISnackbar Snackbar;
+
+<MudGrid Class="table-pdf-container full-height" Spacing="0">
+    <MudItem xs="12" md="6" Class="table-section">
+        <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true" Height="400px">
+            <ColGroup>
+                <col style="width: 150px" />
+                <col style="width: 150px" />
+                <col style="width: 50px" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh>Item</MudTh>
+                <MudTh>Description</MudTh>
+                <MudTh>Safety Document</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Item">@context.ItemNumber</MudTd>
+                <MudTd DataLabel="Description">@context.ItemDescription</MudTd>
+                <MudTd DataLabel="Saftey Document">
+                    <MudButton 
+                    Href="@context.PdfLocation"
+                    Variant="Variant.Outlined"
+                    StartIcon="@Icons.Material.Filled.PictureAsPdf"
+                    Target="_blank"
+                    Size="Size.Small"
+                    OnClick="@(async() => await LoadSDS(context.PdfLocation))">
+                        @context.Language
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+    <MudItem xs="12" md="6" Class="pdf-section">
+        <iframe src="@GetPdfDataUrl()"
+            class="full-height"
+            width="100%"
+            height="100%"
+            style="border: none;">
+            <p>Your browser does not support PDF viewing.</p>
+        </iframe>
+    </MudItem>
+</MudGrid>
+
+@code {
+    #region Parameters
+    [Parameter]
+    public List<SDSTableResult>? TableResults { get; set; } = null!;
+    #endregion
+
+    #region Fields
+    private string selectedSDS = string.Empty;
+    private byte[]? pdfBytes;
+    private bool isLoading = true;
+    #endregion
+    private async Task LoadSDS(string filePath)
+    {
+        Document? document = await documentService.GetByFileLocation(filePath);
+        if (document is not null)
+        {
+            selectedSDS = document.FileName;
+        }
+        else selectedSDS = string.Empty;
+        if (string.IsNullOrEmpty(selectedSDS))
+            return;
+        try
+        {
+            pdfBytes = await documentService.GetPdfAsync(selectedSDS);
+            Snackbar.Add("SDS loaded successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading SDS: {ex.Message}", Severity.Error);
+            pdfBytes = null;
+        }
+
+    }
+    private string GetPdfDataUrl()
+    {
+        if (pdfBytes == null) return string.Empty;
+
+        var base64 = Convert.ToBase64String(pdfBytes);
+        return $"data:application/pdf;base64,{base64}";
+    }
+    protected override void OnParametersSet()
+    {
+        try
+        {
+
+            if (TableResults.Count >= 0 || TableResults is null)
+            {
+                pdfBytes = null;
+                selectedSDS = string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("An Error Occurred", Severity.Error);
+            Logger.LogError(ex.ToString());
+        }
+    }
+}
