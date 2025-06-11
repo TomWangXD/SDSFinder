@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using SDSFinder.EFModels;
 
@@ -15,10 +13,10 @@ public partial class SDSFinderContext : DbContext
     public SDSFinderContext(DbContextOptions<SDSFinderContext> options)
         : base(options)
     {
-            this.ChangeTracker.LazyLoadingEnabled = true;
     }
 
     public virtual DbSet<Document> Documents { get; set; }
+    public virtual DbSet<vwGhsLanguageAttributeLookup> vwGhsLanguageAttributeLookup { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -46,23 +44,27 @@ public partial class SDSFinderContext : DbContext
             entity.Property(e => e.SafetyDocumentId).HasMaxLength(128);
         });
 
+        modelBuilder.Entity<vwGhsLanguageAttributeLookup>(entity =>
+        {
+            entity.ToView("vw_GHS_Language_AttributeLookup");
+        });
+
         OnModelCreatingPartial(modelBuilder);
-    }
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-}
-
     public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
     {
         public SDSFinderContext CreateDbContext(string[] args)
         {
+            var optionsBuilder = new DbContextOptionsBuilder<SDSFinderContext>();
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
             {
+                optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false;");
             }
             else
             {
+                optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false;");
             }
 
             return new SDSFinderContext(optionsBuilder.Options);

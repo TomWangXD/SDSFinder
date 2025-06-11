@@ -27,7 +27,9 @@ namespace SDSFinder.Tests.Repositories
             // IND_APPContext
             StubAppContextFactory = new Mock<IDbContextFactory<IndAppContext>>();
             StubAppContextFactory.Setup(f => f.CreateDbContext())
+            .Returns(() => new IndAppContext(new DbContextOptionsBuilder<IndAppContext>().UseInMemoryDatabase("InMemoryTest", b => b.EnableNullChecks(false)).Options));
             StubAppContextFactory.Setup(f => f.CreateDbContextAsync(It.IsAny<CancellationToken>()))
+             .ReturnsAsync(() => new IndAppContext(new DbContextOptionsBuilder<IndAppContext>().UseInMemoryDatabase("InMemoryTest", b => b.EnableNullChecks(false)).Options));
         }
 
         [TestCleanup]
@@ -40,6 +42,7 @@ namespace SDSFinder.Tests.Repositories
             await appContext.SaveChangesAsync();
         }
 
+        public async Task<IndAppContext> AddItemsToMockDb(IndAppContext appContext)
         {
             appContext.ItemGlbls.AddRange(
                 new ItemGlbl { Item = "010000", Description = "Desc A" },
@@ -53,8 +56,12 @@ namespace SDSFinder.Tests.Repositories
         [TestMethod]
         public async Task ValidateItemSuccess()
         {
+            IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
+            AppContext = await AddItemsToMockDb(AppContext);
+            ItemRepository repo = new();
 
+            var item = "010000";
 
             var validationResult = await repo.ValidateItem(item, AppContext);
             Assert.IsTrue(validationResult);
@@ -63,6 +70,7 @@ namespace SDSFinder.Tests.Repositories
         [TestMethod]
         public async Task ValidateItemFailure()
         {
+            IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
             AppContext = await AddItemsToMockDb(AppContext);
             ItemRepository repo = new();

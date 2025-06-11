@@ -19,6 +19,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.15">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -51,7 +53,6 @@
     <Folder Include="EFContexts\Migrations\" />
     <Folder Include="EFModels\Configurations\" />
     <Folder Include="EFModels\DataBindings\" />
-    <Folder Include="Components\" />
     <Folder Include="EFModels\Configurations\" />
     <Folder Include="EFModels\DataBindings\" />
     <Folder Include="SQL\v1.0\" />
