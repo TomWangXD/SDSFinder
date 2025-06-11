@@ -29,9 +29,19 @@ public partial class SDSFinderContext : DbContext
     {
         modelBuilder.Entity<Document>(entity =>
         {
-            entity.HasKey(e => e.DocumentId).HasName("PK__Document__1ABEEF0FFBCA7937");
+            entity.HasKey(e => e.Id).HasName("PK_DocumentNew");
 
-            entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
+            entity.ToTable("Document");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.CreatedDate).HasColumnType("datetime");
+            entity.Property(e => e.FileLocation).HasMaxLength(300);
+            entity.Property(e => e.FileName).HasMaxLength(100);
+            entity.Property(e => e.IsDeleted)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
+            entity.Property(e => e.SafetyDocumentId).HasMaxLength(128);
         });
 
         modelBuilder.Entity<vwGhsLanguageAttributeLookup>(entity =>
@@ -43,22 +53,21 @@ public partial class SDSFinderContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-}
-
-public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
-{
-    public SDSFinderContext CreateDbContext(string[] args)
+    public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
     {
-        DbContextOptionsBuilder<SDSFinderContext> optionsBuilder = new();
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
+        public SDSFinderContext CreateDbContext(string[] args)
         {
-            optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
-        }
-        else
-        {
-            optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false");
-        }
+            var optionsBuilder = new DbContextOptionsBuilder<SDSFinderContext>();
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Local")
+            {
+                optionsBuilder.UseSqlServer("Server=localhost;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false;");
+            }
+            else
+            {
+                optionsBuilder.UseSqlServer("Server=app-db-dev;Database=SDSFinder;Trusted_Connection=True;MultipleActiveResultSets=True;Encrypt=false;");
+            }
 
-        return new SDSFinderContext(optionsBuilder.Options);
+            return new SDSFinderContext(optionsBuilder.Options);
+        }
     }
 }

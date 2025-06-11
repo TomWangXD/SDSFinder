@@ -2,13 +2,15 @@ using DevExpress.Blazor;
 
 using Indium.Common.EFContexts;
 using Indium.Common.Modules;
-using Indium.Infor.EFContexts;
+using SDSFinder.EFContexts;
 
 using Indium.Common.Modules.Auth;
 using Microsoft.AspNetCore.Authorization;
 using MudBlazor.Services;
 using SDSFinder.EFContexts;
 using SDSFinder.Modules.Repositories;
+using SDSFinder.Modules.Services;
+
 
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
@@ -33,8 +35,16 @@ builder.Services.Configure<DevExpress.Blazor.Configuration.GlobalOptions>(option
 // Indium services and repositories
 builder.Services.AddScoped<TimeZoneService>();
 
-builder.Services.AddScoped<ISiteRepository, SiteRepository>();
+builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IJobRepository, JobRepository>();
+builder.Services.AddScoped<ISiteRepository, SiteRepository>();
+
+builder.Services.AddScoped<IDocumentService, DocumentService>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<ISiteService, SiteService>();
+
 
 // Authentication and Authorization services
 builder.Services.AddScoped<IAuthorizationHandler, ActiveDirectoryAuthorizationHandler>();
@@ -72,6 +82,17 @@ builder.Services.AddDbContextFactory<CommonContext>(options =>
 {
     string? connectionString = builder.Configuration.GetConnectionString("common");
     if (connectionString is not null)
+    {
+        options.UseSqlServer(connectionString);
+    }
+
+    options.EnableSensitiveDataLogging(false);
+}, ServiceLifetime.Transient);
+
+builder.Services.AddDbContextFactory<IndAppContext>(options =>
+{
+    string? connectionString = builder.Configuration.GetConnectionString("syteline");
+    if (!string.IsNullOrWhiteSpace(connectionString))
     {
         options.UseSqlServer(connectionString);
     }
