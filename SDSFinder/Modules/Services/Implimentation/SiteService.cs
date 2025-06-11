@@ -1,4 +1,4 @@
-﻿using Indium.Infor.EFContexts;
+﻿using SDSFinder.EFContexts;
 using Microsoft.EntityFrameworkCore;
 using SDSFinder.Modules.Repositories;
 using System.Linq.Expressions;

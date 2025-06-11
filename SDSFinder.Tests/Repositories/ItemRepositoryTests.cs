@@ -1,12 +1,12 @@
 ﻿using Indium.Common.EFContexts;
 using Indium.Common.EFModels;
-using Indium.Infor.EFContexts;
-using Indium.Infor.EFModels;
+using SDSFinder.EFContexts;
+using SDSFinder.EFModels;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SDSFinder.Modules.Repositories;
-using SDSFinder.Modules.Repositories.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,17 +19,17 @@ namespace SDSFinder.Tests.Repositories
     [TestClass]
     public class ItemRepositoryTests
     {
-        private Mock<IDbContextFactory<IND_APPContext>> StubAppContextFactory { get; set; } = null!;
+        private Mock<IDbContextFactory<IndAppContext>> StubAppContextFactory { get; set; } = null!;
 
         [TestInitialize]
         public void Init()
         {
             // IND_APPContext
-            StubAppContextFactory = new Mock<IDbContextFactory<IND_APPContext>>();
+            StubAppContextFactory = new Mock<IDbContextFactory<IndAppContext>>();
             StubAppContextFactory.Setup(f => f.CreateDbContext())
-            .Returns(() => new IND_APPContext(new DbContextOptionsBuilder<IND_APPContext>().UseInMemoryDatabase("InMemoryTest", b => b.EnableNullChecks(false)).Options));
+            .Returns(() => new IndAppContext(new DbContextOptionsBuilder<IndAppContext>().UseInMemoryDatabase("InMemoryTest", b => b.EnableNullChecks(false)).Options));
             StubAppContextFactory.Setup(f => f.CreateDbContextAsync(It.IsAny<CancellationToken>()))
-             .ReturnsAsync(() => new IND_APPContext(new DbContextOptionsBuilder<IND_APPContext>().UseInMemoryDatabase("InMemoryTest", b => b.EnableNullChecks(false)).Options));
+             .ReturnsAsync(() => new IndAppContext(new DbContextOptionsBuilder<IndAppContext>().UseInMemoryDatabase("InMemoryTest", b => b.EnableNullChecks(false)).Options));
         }
 
         [TestCleanup]
@@ -42,7 +42,7 @@ namespace SDSFinder.Tests.Repositories
             await appContext.SaveChangesAsync();
         }
 
-        public async Task<IND_APPContext> AddItemsToMockDb(IND_APPContext appContext)
+        public async Task<IndAppContext> AddItemsToMockDb(IndAppContext appContext)
         {
             appContext.ItemGlbls.AddRange(
                 new ItemGlbl { Item = "010000", Description = "Desc A" },
@@ -56,7 +56,7 @@ namespace SDSFinder.Tests.Repositories
         [TestMethod]
         public async Task ValidateItemSuccess()
         {
-            IND_APPContext AppContext = StubAppContextFactory.Object.CreateDbContext();
+            IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
             AppContext = await AddItemsToMockDb(AppContext);
             ItemRepository repo = new();
@@ -70,7 +70,7 @@ namespace SDSFinder.Tests.Repositories
         [TestMethod]
         public async Task ValidateItemFailure()
         {
-            IND_APPContext AppContext = StubAppContextFactory.Object.CreateDbContext();
+            IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
             AppContext = await AddItemsToMockDb(AppContext);
             ItemRepository repo = new();
