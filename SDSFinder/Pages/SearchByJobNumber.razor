@@ -17,20 +17,19 @@
         <MudGrid>
             <MudItem xs="4">
                 <div class="label-font-size">Site</div>
-                <MudAutocomplete 
-                @bind-Value="@(site)"
-                T="CmSiteMaster"
-                Required="true"
-                Margin="@Margin.Dense"
-                Dense="true"
-                Variant="Variant.Filled"
-                SearchFunc="@(e => GetSites(e))"
-                ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
-                MaxItems="100"
-                Clearable="true"
-                ErrorText="Please choose a site" 
-                Style="padding-top: 4px"
-                AnchorOrigin="Origin.CenterCenter"/>
+                <MudAutocomplete @bind-Value="@(site)"
+                                 T="CmSiteMaster"
+                                 Required="true"
+                                 Margin="@Margin.Dense"
+                                 Dense="true"
+                                 Variant="Variant.Filled"
+                                 SearchFunc="@(e => GetSites(e))"
+                                 ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
+                                 MaxItems="100"
+                                 Clearable="true"
+                                 ErrorText="Please choose a site"
+                                 Style="padding-top: 4px"
+                                 AnchorOrigin="Origin.CenterCenter" />
                 <MudItem>
                     <br />
                 </MudItem>
@@ -39,17 +38,16 @@
 
             <MudItem xs="4">
                 <div class="label-font-size">Job Number</div>
-                <MudTextField T="string" 
-                @ref="jobRef" 
-                @bind-value="jobNumber" 
-                ReadOnly="@ReadOnly" 
-                Text="@jobNumber"
-                MaxLength="10"
-                TextChanged="(async(value) => {
+                <MudTextField T="string"
+                              @ref="jobRef"
+                              @bind-value="jobNumber"
+                              ReadOnly="@ReadOnly"
+                              Text="@jobNumber"
+                              MaxLength="10"
+                              TextChanged="(async(value) => {
                                     jobNumber = value;})"
-                OnBlur="@(async() => await JobNumberValidation(jobNumber, jobRef, site.SiteCode, Snackbar))"
-                Variant="Variant.Filled" 
-                />       
+                              OnBlur="@(async() => await JobNumberValidation(jobNumber, jobRef, site.SiteCode, Snackbar))"
+                              Variant="Variant.Filled" />
                 <MudItem>
                     <br />
                 </MudItem>
@@ -59,7 +57,7 @@
                     <MudText>Search</MudText>
                 </MudButton>
                 <MudItem>
-                    <br/>
+                    <br />
                 </MudItem>
             </MudItem>
         </MudGrid>
@@ -90,7 +88,7 @@
         }
         set
         {
-            if(value is not null && _site != value)
+            if (value is not null && _site != value)
             {
                 _site = value;
                 ReadOnly = false;
@@ -133,7 +131,7 @@
 
     }
 
-    private async Task  JobNumberValidation(string jobNumber, MudTextField<string> jobRef, string site, ISnackbar snackbar)
+    private async Task JobNumberValidation(string jobNumber, MudTextField<string> jobRef, string site, ISnackbar snackbar)
     {
 
         var fullJob = await jobService.ExpandJob(jobNumber);
@@ -146,27 +144,25 @@
     }
     private async Task GetTableResult(string jobNumber, string site)
     {
-        if(!string.IsNullOrEmpty(jobNumber))
+        if (!string.IsNullOrEmpty(jobNumber))
         {
             JobMst? job = await jobService.Get(jobNumber, site);
-
-    }
 
             ItemGlbl? item = await itemService.GetBy(x => x.Item == job.Item);
             List<Document> documents = await documentService.GetListBy(x => x.SafetyDocumentId.Equals(item.IndSds));
             if (documents.Count() > 0)
             {
                 List<SDSTableResult?> tableResults = new();
-                foreach(Document document in documents)
+                foreach (Document document in documents)
                 {
                     string language = await GetLanguage(document.FileName);
                     SDSTableResult tableResult = new()
-                    {
-                        ItemNumber = item.Item,
-                        ItemDescription = item.Description,
-                        PdfLocation = document?.FileLocation,
-                        Language = language
-                    };
+                        {
+                            ItemNumber = item.Item,
+                            ItemDescription = item.Description,
+                            PdfLocation = document?.FileLocation,
+                            Language = language
+                        };
 
                     tableResults.Add(tableResult);
 
@@ -215,11 +211,6 @@
     {
         try
         {
-            ReadOnly = true;
-            if (site is not null)
-            {
-                ReadOnly = false;
-            }
         }
         catch (Exception ex)
         {
