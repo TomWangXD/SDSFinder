@@ -4,16 +4,15 @@ using SDSFinder.EFModels;
 
 namespace SDSFinder.EFContexts;
 
-    public partial class SDSFinderContext : DbContext
+public partial class SDSFinderContext : DbContext
+{
+    public SDSFinderContext()
     {
-        public SDSFinderContext()
-        {
-        }
+    }
 
     public SDSFinderContext(DbContextOptions<SDSFinderContext> options)
         : base(options)
     {
-            this.ChangeTracker.LazyLoadingEnabled = true;
     }
 
     public virtual DbSet<Document> Documents { get; set; }
@@ -26,12 +25,13 @@ namespace SDSFinder.EFContexts;
         }
     }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Document>(entity =>
         {
-            base.OnModelCreating(modelBuilder);
+            entity.HasKey(e => e.Id).HasName("PK_DocumentNew");
 
-            // Entity configurations are at /EFContexts/Configurations
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            entity.ToTable("Document");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
@@ -49,18 +49,10 @@ namespace SDSFinder.EFContexts;
             entity.ToView("vw_GHS_Language_AttributeLookup");
         });
 
-        modelBuilder.Entity<vwGhsLanguageAttributeLookup>(entity =>
-        {
-            entity.ToView("vw_GHS_Language_AttributeLookup");
-        });
-
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-    }
-
     public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
     {
         public SDSFinderContext CreateDbContext(string[] args)
