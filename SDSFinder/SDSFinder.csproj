@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Controllers\**" />
+    <Content Remove="Controllers\**" />
+    <EmbeddedResource Remove="Controllers\**" />
+    <None Remove="Controllers\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Blazor" Version="23.1.5" />
+    <PackageReference Include="Indium.Common" Version="3.0.0-alpha.49" />
+    <PackageReference Include="Indium.Components" Version="1.0.554" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.15">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.15">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MudBlazor" Version="6.20.0" />
+    <PackageReference Include="System.Collections" Version="4.3.0" />
+    <PackageReference Include="System.Diagnostics.Debug" Version="4.3.0" />
+    <PackageReference Include="System.DirectoryServices" Version="8.0.0" />
+    <PackageReference Include="System.DirectoryServices.AccountManagement" Version="8.0.0" />
+    <PackageReference Include="System.IO.FileSystem.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.3.1" />
+    <PackageReference Include="System.Runtime.InteropServices" Version="4.3.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\fonts\roboto-black-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-blackitalic-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-bold-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-bolditalic-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-italic-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-light-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-lightitalic-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-medium-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-mediumitalic-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-regular-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-thin-webfont.woff2" />
+    <None Include="wwwroot\fonts\roboto-thinitalic-webfont.woff2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Components\" />
+    <Folder Include="EFContexts\Migrations\" />
+    <Folder Include="EFContexts\Migrations\" />
+    <Folder Include="EFModels\Configurations\" />
+    <Folder Include="EFModels\DataBindings\" />
+    <Folder Include="EFModels\Configurations\" />
+    <Folder Include="EFModels\DataBindings\" />
+    <Folder Include="SQL\v1.0\" />
+    <Folder Include="Workflow\" />    
+  </ItemGroup>
+</Project>
