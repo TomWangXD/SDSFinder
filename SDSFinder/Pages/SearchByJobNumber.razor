@@ -4,7 +4,7 @@
 @using MudBlazor
 
 @page "/"
-
+@page "/SearchByJobNumber"
 @inject IJSRuntime JSRuntime
 @inject ILogger<Index> Logger
 @inject ISnackbar Snackbar
@@ -213,11 +213,6 @@
     {
         try
         {
-            ReadOnly = true;
-            if (site is not null)
-            {
-                ReadOnly = false;
-            }
         }
         catch (Exception ex)
         {

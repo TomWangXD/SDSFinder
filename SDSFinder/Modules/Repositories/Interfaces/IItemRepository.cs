@@ -11,6 +11,6 @@ namespace SDSFinder.Modules.Repositories
         Task<ItemGlbl?> GetBy(Expression<Func<ItemGlbl, bool>> selector, IndAppContext context);
         Task<List<ItemGlbl>> GetLimitedListBy(Expression<Func<ItemGlbl, bool>> selector, int take, IndAppContext context);
         Task<List<ItemGlbl>> GetListBy(Expression<Func<ItemGlbl, bool>> selector, IndAppContext context);
-    
+
     }
 }

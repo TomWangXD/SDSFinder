@@ -105,7 +105,7 @@ public class JobRepositoryTests
     public async Task ValidateJobPartialMatchJobFailure()
     {
         IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
-        
+
         AppContext = await AddJobToMockDb(AppContext);
         JobRepository repo = new();
 

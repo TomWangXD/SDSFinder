@@ -1,6 +1,4 @@
-﻿using SDSFinder.EFContexts;
-using SDSFinder.EFModels;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace SDSFinder.Modules.Repositories
 {
