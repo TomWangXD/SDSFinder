@@ -37,9 +37,7 @@ public partial class SDSFinderContext : DbContext
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.FileLocation).HasMaxLength(300);
             entity.Property(e => e.FileName).HasMaxLength(100);
-            entity.Property(e => e.IsDeleted)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.IsDeleted);
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             entity.Property(e => e.SafetyDocumentId).HasMaxLength(128);
         });

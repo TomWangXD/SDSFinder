@@ -16,6 +16,13 @@ public class ItemService : IItemService
         _itemRepository = itemRepository;
         _contextFactory = contextFactory;
     }
+    public async Task<bool> ValidateItem(string item)
+    {
+        using IndAppContext context = await _contextFactory.CreateDbContextAsync();
+        bool result = await _itemRepository.ValidateItem(item, context);
+        return result;
+    }
+
 
     public async Task<ItemGlbl?> GetBy(Expression<Func<ItemGlbl, bool>> selector)
     { 

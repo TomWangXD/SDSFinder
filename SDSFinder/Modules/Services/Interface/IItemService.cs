@@ -7,5 +7,6 @@ namespace SDSFinder.Modules.Services
     {
         Task<ItemGlbl?> GetBy(Expression<Func<ItemGlbl, bool>> selector);
         Task<List<ItemGlbl>> GetListBy(Expression<Func<ItemGlbl, bool>> selector);
+        Task<bool> ValidateItem(string item);
     }
 }
