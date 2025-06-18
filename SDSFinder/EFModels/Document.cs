@@ -21,5 +21,5 @@ public partial class Document
 
     public DateTime? ModifiedDate { get; set; }
 
-    public string? IsDeleted { get; set; }
+    public bool IsDeleted { get; set; }
 }

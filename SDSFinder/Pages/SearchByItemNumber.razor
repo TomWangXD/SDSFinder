@@ -1,0 +1,200 @@
+﻿@page "/SearchByItemNumber"
+
+@using SDSFinder.Modules.Repositories
+@using SDSFinder.Modules.Services
+@using SDSFinder.EFModels
+@using SDSFinder.EFContexts
+@using MudBlazor
+
+
+@inject IJSRuntime JSRuntime
+@inject ILogger<Index> Logger
+@inject ISnackbar Snackbar
+@inject ISiteService siteService
+@inject IItemService itemService
+@inject IItemRepository itemRepository
+@inject IDocumentService documentService
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
+    <div class="search-section">
+        <MudGrid>
+            <MudItem xs="4">
+                <div class="label-font-size">Item Number</div>
+                <MudTextField T="string"
+                @ref="itemRef"
+                @bind-value="itemNumber"
+                ReadOnly="false"
+                Text="@itemNumber"
+                MaxLength="80"
+                TextChanged="(async(value) => {
+                                        itemNumber = value;})"
+                OnBlur="@(async() => await ItemNumberValidation(itemNumber, itemRef, Snackbar))"
+                Variant="Variant.Filled" />
+            </MudItem>
+            <MudItem xs="4" Class="button">
+                <MudButton Variant="Variant.Filled" Size="Size.Large" Disabled="@ReadOnly" OnClick="@(async() => await GetTableResultByItem(itemNumber!))">
+                    <MudText>Search</MudText>
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </div>
+    <div class="content-section">
+        <SDSSearchResultTable TableResults="TableResults"></SDSSearchResultTable>
+    </div>
+</MudContainer>
+
+
+@code {
+    /// <summary>
+    /// This is a function that gets called when the page is first rendered.
+    /// This page can be cached and may not always run when changing pages, just the first time within the instance
+    /// </summary>
+
+    #region  Properties
+
+    private string? itemNumber { get; set; }
+    public bool ReadOnly = false;
+    private MudTextField<string> itemRef;
+    private List<SDSTableResult?> TableResults = new();
+    #endregion
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            ReadOnly = true;
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("An Error Occurred", Severity.Error);
+            Logger.LogError(ex.ToString());
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+    }
+
+    private async Task<IEnumerable<CmSiteMaster>> GetSites(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return await siteService.GetAll();
+        }
+        else
+        {
+            return await siteService.GetLimitedListBy(x => x.SiteCode.Contains(value) || x.SiteName.Contains(value), 100);
+        }
+
+    }
+
+    private async Task ItemNumberValidation(string? itemNumber, MudTextField<string> itemRef, ISnackbar snackbar)
+    {
+        if (string.IsNullOrEmpty(itemNumber)) return;
+
+        var validationResult = await itemService.ValidateItem(itemNumber);
+
+        if (!validationResult)
+        {
+            snackbar.Add($"No items found for item number {itemNumber}", Severity.Info);
+            ReadOnly = true;
+            await itemRef.Clear();
+        }
+        else
+        {
+            snackbar.Add("Item found!", Severity.Success);
+            ReadOnly = false;
+        }
+    }
+
+    private async Task GetTableResultByItem(string item)
+    {
+        if (!string.IsNullOrEmpty(item))
+        {
+
+            ItemGlbl? fullItem = await itemService.GetBy(x => x.Item == item);
+
+            if (fullItem is null)
+            {
+                Snackbar.Add("Item could not be found", Severity.Info);
+                return;
+            }
+
+            List<Document> documents = await documentService.GetListBy(x => x.SafetyDocumentId == fullItem.IndSds);
+            if (documents.Count() > 0)
+            {
+                List<SDSTableResult?> tableResults = new();
+                foreach (Document document in documents)
+                {
+                    string language = await GetLanguage(document.FileName);
+                    SDSTableResult tableResult = new()
+                        {
+                            ItemNumber = fullItem.Item,
+                            ItemDescription = fullItem.Description,
+                            PdfLocation = document?.FileLocation ?? ReportFileLocationNotFound(fullItem),
+                            Language = language
+                        };
+
+                    tableResults.Add(tableResult);
+
+                }
+                TableResults = tableResults;
+            }
+        }
+        else
+        {
+            TableResults = new();
+            Snackbar.Add("Please enter an item number", Severity.Info);
+        }
+    }
+
+    private string ReportFileLocationNotFound(ItemGlbl item)
+    {
+        Snackbar.Add("Pdf location could not be found. Please contact IT", Severity.Error);
+        Logger.LogError($"Item: {item.Item} is missing a pdf location");
+        return string.Empty;
+    }
+
+    private async Task<string> GetLanguage(string fileName)
+    {
+        string languageCode = !String.IsNullOrWhiteSpace(fileName) && fileName.Length >= 2 ?
+        fileName.Substring(0, 2) : fileName;
+        var result = languageCode switch
+        {
+            "cs" => "",
+            "de" => "German",
+            "en" => "English",
+            "es" => "Spanish",
+            "et" => "",
+            "fi" => "Finnish",
+            "fr" => "French",
+            "hu" => "Hungarian",
+            "it" => "Italian",
+            "ms" => "Malay",
+            "no" => "Norwegian",
+            "pl" => "Polish",
+            "pt" => "Portuguese",
+            "ro" => "Romanian",
+            "ru" => "Russian",
+            "sv" => "Swedish",
+            "zf" => "Chinese (Simplified)",
+            "zh" => "Chinese",
+            _ => "Unsupported language"
+        };
+        return result;
+    }
+    /// <summary>
+    /// This is a function that gets called any time that MainLayout.razor re-renders.
+    /// </summary>
+    protected override void OnParametersSet()
+    {
+        try
+        {
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("An Error Occurred", Severity.Error);
+            Logger.LogError(ex.ToString());
+        }
+    }
+
+
+}
