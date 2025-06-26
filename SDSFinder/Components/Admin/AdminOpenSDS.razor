@@ -1,0 +1,200 @@
+﻿@using MudBlazor
+@using SDSFinder.EFModels
+@using SDSFinder.EFContexts
+@using SDSFinder.Modules.Services
+
+@inject ILogger<Index> Logger;
+@inject IDocumentService documentService;
+@inject ISnackbar Snackbar;
+@inject User User;
+@* @attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_OPEN)] *@
+<MudGrid Class="table-pdf-container full-height" >
+    <MudItem xs="12">
+        <MudFileUpload T="IBrowserFile" Accept=".pdf" FilesChanged="UploadFiles">
+            <ActivatorContent>
+                <MudButton 
+                    Class="mb-4"
+                    Variant="Variant.Filled"
+                    Color="Color.Primary">Add SDS</MudButton>
+            </ActivatorContent>
+        </MudFileUpload> 
+    </MudItem>
+    <MudItem xs="6">
+        <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true">
+            <ColGroup>
+                <col style="width: 150px" />
+                <col style="width: 25px" />
+                <col style="width: 25px" />
+            </ColGroup>
+            <HeaderContent>
+                <MudTh>File Name</MudTh>
+                <MudTh>Safety Document</MudTh>
+                <MudTh></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="File Name">@context.FileName</MudTd>
+                <MudTd DataLabel="Saftey Document">
+                    <MudButton Href="@context.FileLocation"
+                                Variant="Variant.Filled"
+                                StartIcon="@Icons.Material.Filled.PictureAsPdf"
+                                Target="_blank"
+                                Size="Size.Small"
+                                OnClick="@(async() => await LoadSDS(context.FileLocation))">
+                        @GetLanguage(context.FileName)
+                    </MudButton>
+                </MudTd>
+                <MudTd DataLabel="Delete">
+                    <MudButton Variant="Variant.Filled" 
+                                StartIcon="@Icons.Material.Filled.Delete"
+                                OnClick="@(async() => await DeleteSDS(context))">
+                        Delete
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+    <MudItem xs="6">
+        <iframe src="@GetPdfDataUrl()"
+                class="full-height"
+                width="100%"
+                height="100%"
+                style="border: none;">
+            <p>Your browser does not support PDF viewing.</p>
+        </iframe>
+    </MudItem>
+</MudGrid>
+@code {
+    #region feilds
+    public List<Document>? TableResults { get; set; } = null!;
+    private byte[]? pdfBytes;
+    private string selectedSDS = string.Empty;
+    private string language = string.Empty;
+    private IList<IBrowserFile> _files = new List<IBrowserFile>();
+    #endregion
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await LoadTableData();
+
+    }
+
+    protected override void OnParametersSet()
+    {
+        try
+        {
+            if (TableResults.Count >= 0 || TableResults is null)
+            {
+                pdfBytes = null;
+                selectedSDS = string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("An Error Occurred", Severity.Error);
+            Logger.LogError(ex.ToString());
+        }
+    }
+
+    private void UploadFiles(IBrowserFile file)
+    {
+        _files.Add(file);
+        //TODO upload the files to the server
+    }
+    private async Task LoadTableData()
+    {
+        TableResults = await documentService.GetAll();
+    }
+
+
+    private async Task LoadSDS(string filePath)
+    {
+        Document? document = await documentService.GetByFileLocation(filePath);
+        if (document is not null)
+        {
+            selectedSDS = document.FileName;
+        }
+        else selectedSDS = string.Empty;
+        if (string.IsNullOrEmpty(selectedSDS))
+            return;
+        try
+        {
+            pdfBytes = await documentService.GetPdfAsync(filePath);
+            Snackbar.Add("SDS loaded successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading SDS: {ex.Message}", Severity.Error);
+            pdfBytes = null;
+        }
+
+    }
+    private async Task DeleteSDS(Document document)
+    {
+        await documentService.Delete(document);
+        await LoadTableData();
+        StateHasChanged();
+        if (selectedSDS.Equals(document.FileName))
+        {
+            selectedSDS = string.Empty;
+            pdfBytes = null;
+        }
+    }
+
+    private string GetPdfDataUrl()
+    {
+        if (pdfBytes == null) return string.Empty;
+
+        var base64 = Convert.ToBase64String(pdfBytes);
+        return $"data:application/pdf;base64,{base64}";
+    }
+
+    private string GetLanguage(string fileName)
+    {
+        string languageCode = !String.IsNullOrWhiteSpace(fileName) && fileName.Length >= 2 ?
+        fileName.Substring(0, 2) : fileName;
+        var result = languageCode switch
+        {
+            "cs" => "",
+            "de" => "German",
+            "en" => "English",
+            "es" => "Spanish",
+            "et" => "",
+            "fi" => "Finnish",
+            "fr" => "French",
+            "hu" => "Hungarian",
+            "it" => "Italian",
+            "ms" => "Malay",
+            "no" => "Norwegian",
+            "pl" => "Polish",
+            "pt" => "Portuguese",
+            "ro" => "Romanian",
+            "ru" => "Russian",
+            "sv" => "Swedish",
+            "zf" => "Chinese (Simplified)",
+            "zh" => "Chinese",
+            _ => "Unsupported language"
+        };
+        return result;
+    }
+    private async Task UploadSDS(IBrowserFile file)
+    {
+        _files.Add(file);
+        Document document = new()
+        {
+            FileName = file.Name,
+            CreatedBy = User.Employee.Id,
+            IsDeleted = false,
+            CreatedDate = DateTime.Now
+        };
+        await documentService.Create(document);
+
+    } 
+}

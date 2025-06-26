@@ -11,7 +11,7 @@ GO
 CREATE VIEW [dbo].[vw_GHS_Language_AttributeLookup]
 AS
 SELECT *
-FROM OPENQUERY([CSI-LIVE-DB1], '
+FROM OPENQUERY([SL10-LIVE-DB], '
     SELECT
            v.site_ref,
            v.AttrID,

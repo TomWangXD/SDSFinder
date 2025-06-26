@@ -24,7 +24,7 @@
                 Margin="@Margin.Dense"
                 Dense="true"
                 Variant="Variant.Filled"
-                SearchFunc="@(e => GetSites(e))"
+                SearchFunc="GetSites"
                 ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
                 MaxItems="100"
                 Clearable="true"
@@ -120,7 +120,7 @@
         }
     }
 
-    private async Task<IEnumerable<CmSiteMaster>> GetSites(string? value)
+    private async Task<IEnumerable<CmSiteMaster>> GetSites(string? value, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
