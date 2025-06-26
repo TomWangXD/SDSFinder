@@ -17,16 +17,7 @@ public class DocumentService : IDocumentService
         _contextFactory = contextFactory;
         _configuration = configuration;
     }
-    public async Task Create(Document document)
-    {
-        using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();  
-        await _documentRepository.Create(document, context);
-    }
-    public async Task Delete(Document document)
-    {
-        using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();
-        await _documentRepository.Delete(document, context);
-    }
+
     public async Task<List<Document>> GetListBy(Expression<Func<Document, bool>> selector)
     {
         using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();

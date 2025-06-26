@@ -5,21 +5,6 @@ namespace SDSFinder.Modules.Repositories;
 
 public class DocumentRepository : IDocumentRepository
 {
-
-    public async Task Create(Document document, SDSFinderContext context)
-    {
-        await context.Documents.AddAsync(document);
-        await context.SaveChangesAsync();
-
-        return document;
-    }
-    public async Task Delete(Document document, SDSFinderContext context)
-    {
-        document.IsDeleted = true;
-        context.Documents.Update(document);
-        await context.SaveChangesAsync();
-    }
-
     public async Task<List<Document>> GetListBy(Expression<Func<Document, bool>> selector, SDSFinderContext context)
     {
         List<Document> result = await context.Documents.Where(selector).OrderBy(x => x.Id).ToListAsync();

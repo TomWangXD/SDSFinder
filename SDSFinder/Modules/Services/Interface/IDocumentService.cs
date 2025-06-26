@@ -7,6 +7,4 @@ public interface IDocumentService
     Task<Document?> GetByFileLocation(string fileLocation);
     Task<byte[]> GetPdfAsync(string filePath);
     Task<List<Document>> GetAll();
-    Task Delete(Document document);
-    Task Create(Document document);
 }

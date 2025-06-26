@@ -1,31 +1,9 @@
 ﻿@page "/Admin"
-@using SDSFinder.Components.Admin
 @inject User User
-<MudTabs>
 
-        <MudTabPanel Text="Open SDS">
-            <MudItem>
-                <br />
-            </MudItem>
-            <MudItem>
-                <AdminOpenSDS />
-            </MudItem>
-        </MudTabPanel>
-    
-</MudTabs>
 
 
 @code {
-    private bool isAdminOpen = false;
-    private bool isAdminIntercompany = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        await base.OnInitializedAsync();
-
-        isAdminOpen = await User.HasPermissions(AppPermissions.ADMIN_OPEN);
-        isAdminIntercompany = await User.HasPermissions(AppPermissions.ADMIN_INTERCOMPANY);
-
-    }
 
 }
