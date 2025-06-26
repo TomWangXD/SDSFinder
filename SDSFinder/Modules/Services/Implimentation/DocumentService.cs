@@ -18,7 +18,6 @@ public class DocumentService : IDocumentService
         _configuration = configuration;
     }
 
-
     public async Task<List<Document>> GetListBy(Expression<Func<Document, bool>> selector)
     {
         using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();
@@ -32,10 +31,16 @@ public class DocumentService : IDocumentService
         Document? result = await _documentRepository.GetByFileLocation(fileLocation, context);
         return result;
     }
-    public async Task<byte[]> GetPdfAsync(string filename)
+    public async Task<List<Document>> GetAll()
     {
+        using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();
+        var result = await _documentRepository.GetAll(context);
+        return result;
+    }
+    public async Task<byte[]> GetPdfAsync(string filePath)
+    {   
 
-        return await File.ReadAllBytesAsync($"{_configuration["ResourcePath"]}\\{filename}.pdf");
+        return await File.ReadAllBytesAsync($"{filePath}");
     }
 
 

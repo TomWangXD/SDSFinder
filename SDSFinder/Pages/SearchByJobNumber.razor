@@ -24,7 +24,7 @@
                 Margin="@Margin.Dense"
                 Dense="true"
                 Variant="Variant.Filled"
-                SearchFunc="@(e => GetSites(e))"
+                SearchFunc="GetSites"
                 ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
                 MaxItems="100"
                 Clearable="true"
@@ -120,7 +120,7 @@
         }
     }
 
-    private async Task<IEnumerable<CmSiteMaster>> GetSites(string? value)
+    private async Task<IEnumerable<CmSiteMaster>> GetSites(string? value, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -146,6 +146,7 @@
     }
     private async Task GetTableResult(string jobNumber, string site)
     {
+        TableResults = new();
         if(!string.IsNullOrEmpty(jobNumber))
         {
             JobMst? job = await jobService.Get(jobNumber, site);
@@ -170,6 +171,11 @@
 
                 }
                 TableResults = tableResults;
+            }
+            if(TableResults.Count() == 0)
+            {
+                ClearJob();
+                Snackbar.Add("No SDS Found for this Job Number at this Site", Severity.Info);
             }
         }
         else
@@ -219,6 +225,12 @@
             Snackbar.Add("An Error Occurred", Severity.Error);
             Logger.LogError(ex.ToString());
         }
+    }
+
+    private void ClearJob()
+    {
+        jobRef = new();
+        jobNumber = string.Empty;
     }
 
 

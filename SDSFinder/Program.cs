@@ -46,7 +46,7 @@ builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<ISiteService, SiteService>();
 
-
+builder.Services.AddScoped<User>();
 // Authentication and Authorization services
 builder.Services.AddScoped<IAuthorizationHandler, ActiveDirectoryAuthorizationHandler>();
 builder.Services.AddScoped<IPermissionService, ActiveDirectoryPermissionService>();
