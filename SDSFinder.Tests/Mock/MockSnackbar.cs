@@ -7,7 +7,7 @@ using MudBlazor;
 
 namespace SDSFinder.Testss.Tests.Mock
 {
-    internal class MockSnackbar : MudBlazor.ISnackbar
+    internal class MockSnackbar : ISnackbar
     {
         public IEnumerable<Snackbar> ShownSnackbars => throw new NotImplementedException();
 
@@ -32,6 +32,11 @@ namespace SDSFinder.Testss.Tests.Mock
         }
 
         public Snackbar Add<T>(Dictionary<string, object> componentParameters = null, Severity severity = Severity.Normal, Action<SnackbarOptions> configure = null, string key = "") where T : IComponent
+        {
+            throw new NotImplementedException();
+        }
+
+        public Snackbar? Add(MarkupString message, Severity severity = Severity.Normal, Action<SnackbarOptions>? configure = null, string? key = null)
         {
             throw new NotImplementedException();
         }
