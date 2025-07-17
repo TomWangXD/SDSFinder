@@ -100,7 +100,7 @@
         try
         {
 
-            if (TableResults.Count >= 0 || TableResults is null)
+            if (TableResults is null || TableResults.Count >= 0)
             {
                 pdfBytes = null;
                 selectedSDS = string.Empty;

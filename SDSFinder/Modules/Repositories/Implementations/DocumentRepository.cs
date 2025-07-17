@@ -1,4 +1,5 @@
-﻿using System.Linq.Expressions;
+﻿using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 
 namespace SDSFinder.Modules.Repositories;
@@ -8,7 +9,7 @@ public class DocumentRepository : IDocumentRepository
     public async Task<List<Document>> GetListBy(Expression<Func<Document, bool>> selector, SDSFinderContext context)
     {
         List<Document> result = await context.Documents.Where(selector).OrderBy(x => x.Id).ToListAsync();
-        
+
         return result;
 
     }
@@ -25,5 +26,33 @@ public class DocumentRepository : IDocumentRepository
             .ToListAsync();
         return result;
     }
+    public async Task Create(Document document, SDSFinderContext context)
+    {
+        List<Document> documents = context.Documents.Where(x => x.FileName == document.FileName && x.IsDeleted == false).ToList();
 
+        if (documents.Count > 0) 
+        {
+            document = documents.First();
+            await Update(document, context);
+        }
+        else
+        {
+            context.Documents.Add(document);
+            await context.SaveChangesAsync();
+        }   
+
+    }
+    public async Task Update(Document document, SDSFinderContext context)
+    {
+        document.ModifiedDate = DateTime.Now;   
+        
+        context.Documents.Update(document);
+        await context.SaveChangesAsync();
+    }
+    public async Task Delete(Document document, SDSFinderContext context)
+    {
+        document.IsDeleted = true;
+        await Update(document, context);
+    }
+    
 }

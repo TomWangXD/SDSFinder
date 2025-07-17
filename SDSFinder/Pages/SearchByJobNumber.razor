@@ -12,6 +12,7 @@
 @inject IJobService jobService
 @inject IItemService itemService
 @inject IDocumentService documentService
+
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
     <div class="search-section">
         <MudGrid>
@@ -152,7 +153,12 @@
             JobMst? job = await jobService.Get(jobNumber, site);
 
             ItemGlbl? item = await itemService.GetBy(x => x.Item == job.Item);
-            List<Document> documents = await documentService.GetListBy(x => x.SafetyDocumentId.Equals(item.IndSds));
+            List<Document> documents = new();
+            if (item != null)
+            {
+                documents = await documentService.GetListBy(x => x.SafetyDocumentId != null && x.SafetyDocumentId.Equals(item.IndSds));
+            }
+
             if (documents.Count() > 0)
             {
                 List<SDSTableResult?> tableResults = new();
@@ -172,7 +178,7 @@
                 }
                 TableResults = tableResults;
             }
-            if(TableResults.Count() == 0)
+            if(TableResults == null || TableResults.Count() == 0)
             {
                 ClearJob();
                 Snackbar.Add("No SDS Found for this Job Number at this Site", Severity.Info);

@@ -5,9 +5,11 @@ namespace SDSFinder.EFModels;
 
 public partial class Document
 {
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
 
-    public string SafetyDocumentId { get; set; } = null!;
+    public string? SafetyDocumentId { get; set; }
 
     public string FileName { get; set; } = null!;
 

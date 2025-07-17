@@ -1,0 +1,278 @@
+﻿@using System.Net.Http.Json
+@using SDSFinder.Modules.Services
+@using SDSFinder.EFModels
+@using SDSFinder.EFContexts
+@using MudBlazor
+
+@inject IJSRuntime JSRuntime
+@inject ILogger<Index> Logger
+@inject IDocumentService documentService;
+@inject ISnackbar Snackbar;
+@inject IConfiguration config
+@inject IActionItemService actionItemService;
+@inject User user
+
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
+    <div class="search-section">
+        <MudGrid>
+            <MudItem xs="4">
+                <div class="label-font-size">Safety Document</div>
+                <MudTextField T="string"
+                @ref="fileNameRef"
+                @bind-Value="fileName"
+                Text="@fileName"
+                TextChanged="(async(value) => {
+                                        fileName = value;})"
+                Variant="Variant.Filled" />
+            </MudItem>
+            <MudItem xs="4" Class="button">
+                <MudButton Variant="Variant.Filled" Size="Size.Large" Disabled="false" OnClick="@(async() => await GetTableResultByFileName(fileName))">
+                    <MudText>Search</MudText>
+                </MudButton>
+            </MudItem>
+            <MudItem xs="8">
+                <MudFileUpload T="IBrowserFile" Accept=".pdf" MaximumFileCount="1" OnFilesChanged="HandleFileUpload">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.CloudUpload">
+                           Add Open SDS
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+            </MudItem>
+        </MudGrid>
+    </div>
+    <div class="content-section">
+        <MudGrid Class="table-pdf-container full-height" Spacing="0">
+            <MudItem xs="12" md="6" Class="table-section">
+                <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true" Height="400px">
+                    <ColGroup>
+                        <col style="width: 150px" />
+                        <col style="width: 150px" />
+                        <col style="width: 50px" />
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>File Name</MudTh>
+                        <MudTh>Safety Document</MudTh>
+                        <MudTh></MudTh>
+                    </HeaderContent>
+
+                    <RowTemplate>
+                        <MudTd DataLabel="FileName">@context.FileName</MudTd>
+                        <MudTd DataLabel="Saftey Document">
+                            <MudButton Href="@context.FileLocation"
+                                       Variant="Variant.Outlined"
+                                       StartIcon="@Icons.Material.Filled.PictureAsPdf"
+                                       Target="_blank"
+                                       Size="Size.Small"
+                                       OnClick="@(async() => await LoadSDS(context.FileLocation))">
+                                    @GetLanguage(context.FileName)
+                            </MudButton>
+                        </MudTd>                       
+                        <MudTd>
+                            <MudButton 
+                                        Variant="Variant.Outlined"
+                                        StartIcon="@Icons.Material.Filled.Delete"
+                                        Target="_blank"
+                                        Size="Size.Small"
+                                        OnClick="@(async() => await DeleteSDS(context))">
+                                        Delete
+                            </MudButton>
+                        </MudTd>
+                    </RowTemplate>
+
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </MudItem>
+            <MudItem xs="12" md="6" Class="pdf-section">
+                <iframe src="@GetPdfDataUrl()"
+                        class="full-height"
+                        width="100%"
+                        height="100%"
+                        style="border: none;">
+                    <p>Your browser does not support PDF viewing.</p>
+                </iframe>
+            </MudItem>
+        </MudGrid>
+    </div>
+</MudContainer>
+@code {
+    public List<Document>? TableResults { get; set; } = null!;
+
+    private string selectedSDS = string.Empty;
+    private byte[]? pdfBytes;
+    private string? fileName { get; set;}
+    private MudTextField<string> fileNameRef;
+    private Document selectedDocument = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("An Error Occurred", Severity.Error);
+            Logger.LogError(ex.ToString());
+            await JSRuntime.InvokeVoidAsync("console.error", ex.ToString());
+        }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            if (TableResults is null || TableResults.Count >= 0)
+            {
+                pdfBytes = null;
+                selectedSDS = string.Empty;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("An Error Occurred", Severity.Error);
+            Logger.LogError(ex.ToString());
+        }
+    }
+
+    private async Task LoadSDS(string filePath)
+    {
+        Document? document = await documentService.GetByFileLocation(filePath);
+        if (document is not null)
+        {
+            selectedSDS = document.FileName;
+        }
+        else selectedSDS = string.Empty;
+        if (string.IsNullOrEmpty(selectedSDS))
+            return;
+        try
+        {
+            pdfBytes = await documentService.GetPdfAsync(filePath);
+            Snackbar.Add("SDS loaded successfully", Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading SDS: {ex.Message}", Severity.Error);
+            pdfBytes = null;
+        }
+
+    }
+    private string GetPdfDataUrl()
+    {
+        if (pdfBytes == null) return string.Empty;
+
+        var base64 = Convert.ToBase64String(pdfBytes);
+        return $"data:application/pdf;base64,{base64}";
+    }
+    private async Task GetTableResultByFileName(string fileName)
+    {
+        if (!string.IsNullOrEmpty(fileName))
+        {
+            List<Document> documents = await documentService.GetListBy(x => x.FileName.Contains(fileName) && x.IsDeleted == false);
+            if (documents.Count() > 0)
+            {
+                List<Document> tableResults = new();
+                tableResults.AddRange(documents);
+                TableResults = tableResults;
+            }
+            else
+            {
+                Snackbar.Add($"There are no Saftey Data Sheets that contain {fileName}.", Severity.Info);
+                TableResults = new();
+            }
+        }
+        else
+        {
+            TableResults = new();
+            Snackbar.Add("Please enter the name of the SDS", Severity.Info);
+        }
+    }
+    private string GetLanguage(string fileName)
+    {
+        string languageCode = !String.IsNullOrWhiteSpace(fileName) && fileName.Length >= 2 ?
+        fileName.Substring(0, 2) : fileName;
+        var result = languageCode switch
+        {
+            "cs" => "",
+            "de" => "German",
+            "en" => "English",
+            "es" => "Spanish",
+            "et" => "",
+            "fi" => "Finnish",
+            "fr" => "French",
+            "hu" => "Hungarian",
+            "it" => "Italian",
+            "ms" => "Malay",
+            "no" => "Norwegian",
+            "pl" => "Polish",
+            "pt" => "Portuguese",
+            "ro" => "Romanian",
+            "ru" => "Russian",
+            "sv" => "Swedish",
+            "zf" => "Chinese (Simplified)",
+            "zh" => "Chinese",
+            _ => "Unsupported language"
+        };
+        return result;
+    }
+    private async Task DeleteSDS(Document document)
+    {
+        await documentService.Delete(document);
+        if (!string.IsNullOrEmpty(fileName))
+        {
+            await GetTableResultByFileName(fileName);
+
+            if (selectedSDS == document.FileName)
+            {
+                selectedSDS = string.Empty;
+            }
+            if(TableResults.Count() == 0)
+            {
+                TableResults = new();
+                ClearFileName();
+            }
+        }
+    }
+    private void ClearFileName()
+    {
+        fileNameRef = new();
+        fileName = string.Empty;
+    }
+
+    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    {
+
+        var file = e.File;
+
+        if (file == null || file.ContentType != "application/pdf")
+            return;
+
+
+        var uploadFolder = config["ResourcePathOpen"]; 
+
+
+        var filePath = Path.Combine(uploadFolder, file.Name);
+        Document document = new()
+        {
+            FileLocation = filePath,
+            FileName = file.Name,
+            CreatedBy = user.Employee.Id,
+            CreatedDate = DateTime.Now,
+            IsDeleted = false
+        };
+
+        await documentService.Create(document);
+
+        using (var stream = file.OpenReadStream())
+        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        {
+            await stream.CopyToAsync(fileStream);
+        }
+        Snackbar.Add($"SDS {document.FileName} was added to {uploadFolder}", Severity.Info);
+        await actionItemService.CreateNewSDSActionItem(document);
+    }
+}

@@ -43,5 +43,21 @@ public class DocumentService : IDocumentService
         return await File.ReadAllBytesAsync($"{filePath}");
     }
 
+    public async Task Create(Document document)
+    {
+        using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();
+        await _documentRepository.Create(document, context);
+    }
+    public async Task Update(Document document)
+    {
+        using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();
+        await _documentRepository.Update(document, context);
+    }
+    public async Task Delete(Document document)
+    {
+        using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();
+        await _documentRepository.Delete(document, context);
+    }
+
 
 }
