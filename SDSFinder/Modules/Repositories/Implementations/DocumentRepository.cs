@@ -49,9 +49,11 @@ public class DocumentRepository : IDocumentRepository
         context.Documents.Update(document);
         await context.SaveChangesAsync();
     }
-    public async Task Delete(Document document, SDSFinderContext context)
+    public async Task Delete(Document document, SDSFinderContext context, User user)
     {
         document.IsDeleted = true;
+        document.ModifiedDate = DateTime.Now;
+        document.ModifiedBy = user.Employee.Id;
         await Update(document, context);
     }
     

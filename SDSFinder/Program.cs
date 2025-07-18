@@ -44,6 +44,8 @@ builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<ISiteService, SiteService>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IActionItemService, ActionItemService>();
 builder.Services.AddScoped<IActionItemsClient,ActionItemsClient>();
 

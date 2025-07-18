@@ -13,31 +13,35 @@ public class ActionItemService : IActionItemService
     public IActionItemsClient _actionItemsClient;
     public IConfiguration _configuration;
     public User _user;
+    public IEmployeeService _employeeService;
 
-    public ActionItemService(IActionItemsClient actionItemsClient, IConfiguration configuration, User user)
+    public ActionItemService(IActionItemsClient actionItemsClient, IConfiguration configuration, User user, IEmployeeService employeeService)
     {
         _actionItemsClient = actionItemsClient;
         _configuration = configuration;
         _user = user;
+        _employeeService = employeeService;
     }
     public async Task CreateNewSDSActionItem(Document document)
     {
         try
         {
+            string basePath = _configuration.GetValue<string>("AppLocation")
+                    ?? throw new ArgumentException("Cannot get base path");
+
+            string employee = _configuration.GetValue<string>("ActionItemRecipient");
+
+            CmEmployeeMaster actionItemRecipient = await _employeeService.GetBy(x => x.FullName.Equals(employee));
 
             ActionItemModel actionItemModel = new()
             {
                 Title = $"New SDS {document.FileName} has been added.",
+                URL = $"{basePath}/SDSFinder/",
                 Description = $"SDS {document.FileName} has been added to the {_configuration.GetValue<string>("Region")} environment of the SDS Finder App, please update Syteline Global Item records accordingly.",
                 AssignedTo = new List<AssignedToModel>() {
-                    //new()
-                    //{
-                    //    UserAssigned = 193,
-                    //    EscalationLevel = 0,
-                    //},
                     new()
                     {
-                        UserAssigned = _user.Employee.Id,
+                        UserAssigned = actionItemRecipient.Id,
                         EscalationLevel = 0,
                     }
                 },

@@ -9,5 +9,5 @@ public interface IDocumentRepository
     Task<List<Document>> GetAll(SDSFinderContext context);
     Task Create(Document document, SDSFinderContext context);
     Task Update(Document document, SDSFinderContext context);
-    Task Delete(Document document, SDSFinderContext context);
+    Task Delete(Document document, SDSFinderContext context, User user);
 }

@@ -12,6 +12,8 @@
 @inject IActionItemService actionItemService;
 @inject User user
 
+@attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_OPEN)]
+
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
     <div class="search-section">
         <MudGrid>
@@ -221,7 +223,7 @@
     }
     private async Task DeleteSDS(Document document)
     {
-        await documentService.Delete(document);
+        await documentService.Delete(document, user);
         if (!string.IsNullOrEmpty(fileName))
         {
             await GetTableResultByFileName(fileName);
@@ -264,15 +266,24 @@
             CreatedDate = DateTime.Now,
             IsDeleted = false
         };
+        var documents = await documentService.GetAll();
 
-        await documentService.Create(document);
-
-        using (var stream = file.OpenReadStream())
-        using (var fileStream = new FileStream(filePath, FileMode.Create))
+        var filteredDocuments = documents.Where(x => x.FileName == document.FileName).ToList();
+        if (filteredDocuments.Count() > 0)
         {
-            await stream.CopyToAsync(fileStream);
+            Snackbar.Add($"SDS \"{document.FileName}\" already exists in the file path.", Severity.Error);
         }
-        Snackbar.Add($"SDS {document.FileName} was added to {uploadFolder}", Severity.Info);
-        await actionItemService.CreateNewSDSActionItem(document);
+        else
+        {
+            await documentService.Create(document);
+
+            using (var stream = file.OpenReadStream())
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                await stream.CopyToAsync(fileStream);
+            }
+            Snackbar.Add($"SDS {document.FileName} was added to {uploadFolder}", Severity.Info);
+            await actionItemService.CreateNewSDSActionItem(document);
+        }
     }
 }

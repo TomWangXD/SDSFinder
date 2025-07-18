@@ -9,5 +9,5 @@ public interface IDocumentService
     Task<List<Document>> GetAll();
     Task Create(Document document);
     Task Update(Document document);
-    Task Delete(Document document);
+    Task Delete(Document document, User user);
 }

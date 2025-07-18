@@ -53,10 +53,10 @@ public class DocumentService : IDocumentService
         using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();
         await _documentRepository.Update(document, context);
     }
-    public async Task Delete(Document document)
+    public async Task Delete(Document document, User user)
     {
         using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();
-        await _documentRepository.Delete(document, context);
+        await _documentRepository.Delete(document, context, user);
     }
 
 
