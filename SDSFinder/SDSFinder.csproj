@@ -48,7 +48,6 @@
     <None Include="wwwroot\fonts\roboto-thinitalic-webfont.woff2" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Components\Admin\" />
     <Folder Include="EFContexts\Migrations\" />
     <Folder Include="EFContexts\Migrations\" />
     <Folder Include="EFModels\Configurations\" />

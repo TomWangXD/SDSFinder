@@ -1,12 +1,11 @@
 using DevExpress.Blazor;
-
 using Indium.Common.EFContexts;
+using Indium.Common.Extensions;
 using Indium.Common.Modules;
-using SDSFinder.EFContexts;
-
 using Indium.Common.Modules.Auth;
 using Microsoft.AspNetCore.Authorization;
 using MudBlazor.Services;
+using SDSFinder.EFContexts;
 using SDSFinder.EFContexts;
 using SDSFinder.Modules.Repositories;
 using SDSFinder.Modules.Services;
@@ -45,6 +44,13 @@ builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<ISiteService, SiteService>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IActionItemService, ActionItemService>();
+builder.Services.AddScoped<IActionItemsClient,ActionItemsClient>();
+
+
+builder.Services.UseActionItems(builder.Configuration["APIs:ActionItems"]);
 
 builder.Services.AddScoped<User>();
 // Authentication and Authorization services

@@ -1,6 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using SDSFinder.EFModels;
 
 namespace SDSFinder.EFContexts;
 
@@ -16,41 +17,31 @@ public partial class SDSFinderContext : DbContext
     }
 
     public virtual DbSet<Document> Documents { get; set; }
-    public virtual DbSet<vwGhsLanguageAttributeLookup> vwGhsLanguageAttributeLookup { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-        }
-    }
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=app-db-dev.ica.com;Database=SDSFinder;Integrated Security=true;Encrypt=false");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Document>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK_DocumentNew");
+            entity.HasKey(e => e.Id).HasName("PK__Document__3214EC07E93C67FD");
 
             entity.ToTable("Document");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.FileLocation).HasMaxLength(300);
             entity.Property(e => e.FileName).HasMaxLength(100);
-            entity.Property(e => e.IsDeleted);
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             entity.Property(e => e.SafetyDocumentId).HasMaxLength(128);
-        });
-
-        modelBuilder.Entity<vwGhsLanguageAttributeLookup>(entity =>
-        {
-            entity.ToView("vw_GHS_Language_AttributeLookup");
         });
 
         OnModelCreatingPartial(modelBuilder);
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
     public class DocumentDesignTimeDbContextFactory : IDesignTimeDbContextFactory<SDSFinderContext>
     {
         public SDSFinderContext CreateDbContext(string[] args)
