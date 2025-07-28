@@ -3,6 +3,7 @@
 @using SDSFinder.EFModels
 @using SDSFinder.EFContexts
 @using MudBlazor
+@using SDSFinder.Modules.Admin
 
 @inject IJSRuntime JSRuntime
 @inject ILogger<Index> Logger
@@ -334,7 +335,8 @@
             FileName = file.Name,
             CreatedBy = user.Employee.Id,
             CreatedDate = DateTime.Now,
-            IsDeleted = false
+            IsDeleted = false,
+            SafetyDocumentId = AdminModules.GetSafetyID(file.Name)
         };
         var documents = await documentService.GetAll();
 
@@ -361,5 +363,4 @@
     {
         selectedFile = null;
     }
-
 }
