@@ -30,9 +30,9 @@
             {
                 string? groupValue = group.Value;
 
-                if (user.Groups is not null)
+                if (user.Groups is not null && !string.IsNullOrEmpty(group.Value))
                 {
-                    if (user.Groups.Any(x => x == group.Value))
+                    if (user.Groups.Any(x => x.Contains(group.Value)));
                     {
                         userTitles.Add(group.Key);
                     }

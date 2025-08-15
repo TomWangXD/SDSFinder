@@ -49,6 +49,8 @@ builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IActionItemService, ActionItemService>();
 builder.Services.AddScoped<IActionItemsClient,ActionItemsClient>();
+builder.Services.AddScoped<Indium.Common.Models.User>();
+builder.Services.AddScoped<SDSFinder.Shared.User>();
 
 
 builder.Services.UseActionItems(builder.Configuration["APIs:ActionItems"]);
