@@ -1,5 +1,5 @@
 ﻿@page "/Admin"
-@inject User User
+@inject SDSFinder.Shared.User User
 @using SDSFinder.Components.Admin
 
 <MudTabs>
@@ -22,12 +22,12 @@
     private bool isAdminOpen = false;
     private bool isAdminIntercompany = false;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        await base.OnInitializedAsync();
+        base.OnInitialized();
 
-        isAdminOpen = await User.HasPermissions(AppPermissions.ADMIN_OPEN);
-        isAdminIntercompany = await User.HasPermissions(AppPermissions.ADMIN_INTERCOMPANY);
+        isAdminOpen =  User.UserTitle.Contains(AppPermissions.ADMIN_OPEN);
+        isAdminIntercompany =  User.UserTitle.Contains(AppPermissions.ADMIN_INTERCOMPANY);
 
 
     }
