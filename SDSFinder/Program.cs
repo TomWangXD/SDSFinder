@@ -9,6 +9,7 @@ using SDSFinder.EFContexts;
 using SDSFinder.EFContexts;
 using SDSFinder.Modules.Repositories;
 using SDSFinder.Modules.Services;
+using User = SDSFinder.Shared.User;
 
 
 
