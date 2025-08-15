@@ -5,6 +5,7 @@ using MudBlazor;
 using System.Linq.Expressions;
 using System.Text;
 using Document = SDSFinder.EFModels.Document;
+using User = SDSFinder.Shared.User;
 
 namespace SDSFinder.Modules.Services;
 

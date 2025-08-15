@@ -1,4 +1,5 @@
 ﻿using System.Linq.Expressions;
+using User = SDSFinder.Shared.User;
 
 namespace SDSFinder.Modules.Repositories;
 
