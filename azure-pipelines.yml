@@ -65,13 +65,7 @@ steps:
   inputs:
     command: 'publish'
     arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)/out --no-self-contained'
-  
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet ef migrations bundle'
-  inputs:
-    command: 'custom'
-    custom: 'ef'
-    arguments: 'migrations bundle -c $(contextName) --configuration bundle --force --startup-project $(projectName)\$(projectName).csproj --project $(projectName)\$(projectName).csproj --output $(Build.ArtifactStagingDirectory)/out/efbundle.exe --verbose'
+
 
 - task: ArchiveFiles@2
   displayName: 'Archive files'
