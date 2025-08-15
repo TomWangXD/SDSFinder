@@ -1,9 +1,8 @@
-﻿using DevExpress.Blazor.Internal.Grid;
-using Microsoft.AspNetCore.Identity;
-using Org.BouncyCastle.Crypto;
+﻿
 using SDSFinder.Modules.Repositories;
 using System.Linq.Expressions;
 namespace SDSFinder.Modules.Services;
+using User = SDSFinder.Shared.User;
 
 public class DocumentService : IDocumentService
 {
