@@ -118,7 +118,7 @@
                 return;
             }
 
-            List<Document> documents = await documentService.GetListBy(x => x.SafetyDocumentId == fullItem.IndSds);
+            List<Document> documents = await documentService.GetListBy(x => x.SafetyDocumentId != null && x.SafetyDocumentId == fullItem.IndSds);
             if (documents.Count() > 0)
             {
                 List<SDSTableResult?> tableResults = new();
@@ -137,6 +137,10 @@
 
                 }
                 TableResults = tableResults;
+            }
+            else
+            {
+                Snackbar.Add($"No Safety Documents found with item:{fullItem.Item}", Severity.Info);
             }
         }
         else
