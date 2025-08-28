@@ -6,5 +6,7 @@
         string GetLanguage(string fileName);
         string GetGHSLanguage((string lang1, string lang2, string lang3, string lang4, string lang5) ghsLanguages);
         string GetLanguageFromFormattedString(string formattedLanguage);
+        string GetCountryBeforeParenthesis(string input);
+        Task<(string? SDSLang, string? SDSRegion)> GetLanguageFromCountryLanguageTable(string lang);
     }
 }
