@@ -11,6 +11,7 @@
     <None Remove="Controllers\**" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="DevExpress.Blazor" Version="24.2.5" />
     <PackageReference Include="Indium.Common" Version="3.0.0-alpha.49" />
     <PackageReference Include="Indium.Components" Version="4.0.0-alpha.56" />
