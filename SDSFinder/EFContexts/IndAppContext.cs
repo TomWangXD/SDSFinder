@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SDSFinder.EFModels;
+using System;
+using System.Collections.Generic;
 
 namespace SDSFinder.EFContexts;
 
@@ -27,10 +28,16 @@ public partial class IndAppContext : DbContext
     public virtual DbSet<JobMst> JobMsts { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=sl10-dev-db.ica.com; Database=IND_App;Integrated Security=true;Encrypt=false;");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer("Server=sl10-live-db.ica.com; Database=IND_App;Integrated Security=true;Encrypt=false;");
+        }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    }
+
+
+protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<IndAttribute>(entity =>
         {
