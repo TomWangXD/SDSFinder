@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SDSFinder.EFModels;
+using System;
+using System.Collections.Generic;
 
 namespace SDSFinder.EFContexts;
 
@@ -18,20 +19,25 @@ public partial class IndAppContext : DbContext
 
     public virtual DbSet<IndAttribute> IndAttributes { get; set; }
 
+    public virtual DbSet<IndCountryLanguage> IndCountryLanguages { get; set; }
+
     public virtual DbSet<IndCustomerLinesAttributeValue> IndCustomerLinesAttributeValues { get; set; }
 
     public virtual DbSet<ItemGlbl> ItemGlbls { get; set; }
 
     public virtual DbSet<JobMst> JobMsts { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
         if (!optionsBuilder.IsConfigured)
         {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=csi-pilot-it;Database=IND_App;User Id=svc_SDSFinder;Password=xTzvq27YTA4Eb73;Trusted_Connection=False;Encrypt=False;");
+            optionsBuilder.UseSqlServer("Server=sl10-live-db.ica.com; Database=IND_App;Integrated Security=true;Encrypt=false;");
         }
+
     }
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+
+
+protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<IndAttribute>(entity =>
         {
@@ -73,11 +79,55 @@ public partial class IndAppContext : DbContext
                 .HasDefaultValueSql("(suser_sname())");
         });
 
+        modelBuilder.Entity<IndCountryLanguage>(entity =>
+        {
+            entity.HasKey(e => new { e.IndCountry, e.IndLanguageCode }).IsClustered(false);
+
+            entity.ToTable("IND_CountryLanguage", "dbo", tb =>
+                {
+                    tb.HasTrigger("IND_CountryLanguageDel");
+                    tb.HasTrigger("IND_CountryLanguageInsert");
+                    tb.HasTrigger("IND_CountryLanguageUpdatePenultimate");
+                });
+
+            entity.HasIndex(e => e.RowPointer, "IX_IND_CountryLanguage_RowPointer").IsUnique();
+
+            entity.Property(e => e.IndCountry)
+                .HasMaxLength(30)
+                .HasColumnName("IND_Country");
+            entity.Property(e => e.IndLanguageCode)
+                .HasMaxLength(6)
+                .HasColumnName("IND_LanguageCode");
+            entity.Property(e => e.CreateDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.CreatedBy)
+                .HasMaxLength(128)
+                .HasDefaultValueSql("(suser_sname())");
+            entity.Property(e => e.IndSdslanguage)
+                .HasMaxLength(3)
+                .HasColumnName("IND_SDSLanguage");
+            entity.Property(e => e.IndSdsregion)
+                .HasMaxLength(20)
+                .HasColumnName("IND_SDSRegion");
+            entity.Property(e => e.RecordDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.RowPointer).HasDefaultValueSql("(newid())");
+            entity.Property(e => e.UpdatedBy)
+                .HasMaxLength(128)
+                .HasDefaultValueSql("(suser_sname())");
+        });
+
         modelBuilder.Entity<IndCustomerLinesAttributeValue>(entity =>
         {
             entity.HasKey(e => new { e.SiteRef, e.Seqnum, e.GroupId, e.AttrId, e.CoNum, e.CoLine, e.CoRelease });
 
-            entity.ToTable("IND_CustomerLines_AttributeValue", "dbo");
+            entity.ToTable("IND_CustomerLines_AttributeValue", "dbo", tb =>
+                {
+                    tb.HasTrigger("IND_CustomerLines_AttributeValueInsert");
+                    tb.HasTrigger("IND_CustomerLines_AttributeValueUpdatePenultimate");
+                });
 
             entity.HasIndex(e => e.RowPointer, "IX_IND_CustomerLines_AttributeValue_RowPointer").IsUnique();
 
@@ -368,7 +418,9 @@ public partial class IndAppContext : DbContext
             entity.Property(e => e.ConfigId)
                 .HasMaxLength(32)
                 .HasColumnName("config_id");
+            entity.Property(e => e.ConsumesFill).HasColumnName("consumes_fill");
             entity.Property(e => e.ContainsTaxFreeMatl).HasColumnName("contains_tax_free_matl");
+            entity.Property(e => e.CopiedFromPmfFormulaRowPointer).HasColumnName("copied_from_pmf_formula_RowPointer");
             entity.Property(e => e.CreateDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
@@ -477,11 +529,19 @@ public partial class IndAppContext : DbContext
             entity.Property(e => e.Picked)
                 .HasDefaultValue((byte)0)
                 .HasColumnName("picked");
+            entity.Property(e => e.Plant)
+                .HasMaxLength(8)
+                .HasColumnName("plant");
+            entity.Property(e => e.PmfFormulaRowPointer).HasColumnName("pmf_formula_RowPointer");
+            entity.Property(e => e.PmfMfgSpecOrderRowPointer).HasColumnName("pmf_mfg_spec_order_RowPointer");
+            entity.Property(e => e.PmfPnBatchRowPointer).HasColumnName("pmf_pn_batch_RowPointer");
+            entity.Property(e => e.PnBatchJobType).HasColumnName("pn_batch_job_type");
             entity.Property(e => e.PreassignLots).HasColumnName("preassign_lots");
             entity.Property(e => e.PreassignSerials).HasColumnName("preassign_serials");
             entity.Property(e => e.ProdMix)
                 .HasMaxLength(7)
                 .HasColumnName("prod_mix");
+            entity.Property(e => e.ProducesFill).HasColumnName("produces_fill");
             entity.Property(e => e.ProspectId)
                 .HasMaxLength(7)
                 .HasColumnName("prospect_id");
@@ -684,6 +744,10 @@ public partial class IndAppContext : DbContext
         modelBuilder.HasSequence("IND_SpecHeaderSequence", "dbo")
             .StartsAt(370L)
             .HasMin(370L);
+        modelBuilder.HasSequence<decimal>("VariationIDSequence", "dbo")
+            .StartsAt(63854411899713L)
+            .HasMin(-9223372036854775808L)
+            .HasMax(9223372036854775807L);
 
         OnModelCreatingPartial(modelBuilder);
     }

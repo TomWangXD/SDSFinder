@@ -224,4 +224,20 @@ public partial class JobMst
     public string? IndPackProcess { get; set; }
 
     public int? IndQtyrequiredOfScrap { get; set; }
+
+    public Guid? PmfMfgSpecOrderRowPointer { get; set; }
+
+    public byte ProducesFill { get; set; }
+
+    public byte ConsumesFill { get; set; }
+
+    public Guid? PmfPnBatchRowPointer { get; set; }
+
+    public Guid? PmfFormulaRowPointer { get; set; }
+
+    public Guid? CopiedFromPmfFormulaRowPointer { get; set; }
+
+    public short? PnBatchJobType { get; set; }
+
+    public string? Plant { get; set; }
 }
