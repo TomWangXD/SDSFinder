@@ -10,6 +10,8 @@ using SDSFinder.EFContexts;
 using SDSFinder.Modules.Repositories;
 using SDSFinder.Modules.Repositories.Interfaces;
 using SDSFinder.Modules.Services;
+using SDSFinder.Modules.Services.Implimentation;
+using SDSFinder.Modules.Services.Interface;
 using User = SDSFinder.Shared.User;
 
 
@@ -41,7 +43,6 @@ builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<ISiteRepository, SiteRepository>();
-builder.Services.AddScoped<IAlertRecipientRepository, AlertRecipientRepository>();
 
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IItemService, ItemService>();
@@ -53,7 +54,8 @@ builder.Services.AddScoped<IActionItemService, ActionItemService>();
 builder.Services.AddScoped<IActionItemsClient,ActionItemsClient>();
 builder.Services.AddScoped<Indium.Common.Models.User>();
 builder.Services.AddScoped<SDSFinder.Shared.User>();
-
+builder.Services.AddScoped<IAlertRecipientRepository, AlertRecipientRepository>();
+builder.Services.AddScoped<IAlertRecipientService, AlertRecipientService>();
 
 builder.Services.UseActionItems(builder.Configuration["APIs:ActionItems"]);
 
