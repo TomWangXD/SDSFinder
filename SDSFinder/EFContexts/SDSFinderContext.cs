@@ -17,6 +17,7 @@ public partial class SDSFinderContext : DbContext
     }
 
     public virtual DbSet<Document> Documents { get; set; }
+    public virtual DbSet<AlertRecipient> AlertRecipients { get; set; }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -41,6 +42,17 @@ public partial class SDSFinderContext : DbContext
             entity.Property(e => e.FileName).HasMaxLength(100);
             entity.Property(e => e.ModifiedDate).HasColumnType("datetime");
             entity.Property(e => e.SafetyDocumentId).HasMaxLength(128);
+        });
+
+        modelBuilder.Entity<AlertRecipient>(b =>
+        {
+            b.ToTable("AlertRecipient");     // matches your SQL table name
+            b.HasKey(x => x.Id);
+            b.Property(x => x.UserId).IsRequired().HasMaxLength(100);
+            b.Property(x => x.UserName).IsRequired().HasMaxLength(200);
+
+            // Helpful constraint so a user can only appear once
+            b.HasIndex(x => x.UserId).IsUnique();
         });
 
         OnModelCreatingPartial(modelBuilder);
