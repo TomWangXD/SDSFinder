@@ -1,0 +1,83 @@
+﻿@using SDSFinder.Components.EmployeePicker
+@using SDSFinder.Modules.Services
+@using SDSFinder.Modules.Repositories
+
+@inject IConfiguration Configuration
+@inject IEmployeeService _employeeService
+
+<h3>Alerts Page</h3>
+
+<MudContainer MaxWidth="MaxWidth.Medium">
+    <MudGrid>
+        <Picker @bind-Employee=@AssignedTo
+        Dense=false
+        SearchEmployees="SearchEmployees"
+        FullNameSelector="BuildEmployeeName"
+        EmailSelector="e => e?.Email"
+        ThumbnailSelector="e => e?.Thumbnail"
+        Variant="@Variant.Filled"
+        ReadOnly=false
+        Required=true
+        ErrorText="Please choose an assigned to" />
+    </MudGrid>
+</MudContainer>
+
+
+@code {
+    private bool UserSelected = false;
+    private CmEmployeeMaster? AssignedTo
+    {
+        get => _assignedTo;
+        set
+        {
+            if (value is not null)
+            {
+                _assignedTo = value;
+                UserSelected = true;
+            }
+            else
+            {
+                _assignedTo = null!;
+                UserSelected = false;
+            }
+
+        }
+    }
+    private CmEmployeeMaster? _assignedTo;
+
+    protected override async Task OnInitializedAsync()
+    {        
+        
+    }
+
+    private string BuildEmployeeName(CmEmployeeMaster? employee)
+    {
+        if (string.IsNullOrWhiteSpace(employee?.FullName))
+        {
+            return $"{employee?.FirstName} {employee?.LastName}".Trim();
+        }
+        return employee.FullName;
+    }
+
+    private async Task<IEnumerable<CmEmployeeMaster>> SearchEmployees(string? searchValue)
+    {
+        if (searchValue is null) searchValue = string.Empty;
+        string value = searchValue.ToUpper();
+        var options = await _employeeService.GetLimitedListBy(
+            (x => x.ActiveForDisplay == true
+                && (
+                    x.FullName.ToUpper().Contains(value)
+                    || x.FirstName.ToUpper().Contains(value)
+                    || x.LastName.ToUpper().Contains(value)
+                    || (
+                        !string.IsNullOrWhiteSpace(x.Email)
+                        && x.Email.ToUpper().Contains(value)
+                    )
+                )
+            ), 25
+        );
+
+        return options;
+    }
+
+}

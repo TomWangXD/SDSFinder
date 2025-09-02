@@ -1,0 +1,167 @@
+﻿@typeparam T
+
+@using System.Linq.Expressions
+
+<style>
+    ::deep .mud-input {
+        height: 48px !important;
+    }
+
+    input {
+        padding: 16px 12px !important;
+    }
+
+    .mud-list-item-gutters {
+        padding: 0 !important;
+    }
+</style>
+
+<div class="Picker">
+    @if (Employee is not null)
+    {
+        <MudField Label="@Label" DisableUnderLine=@DisableUnderline Variant="Variant.Text">
+            <EmployeeCard T="T"
+                          Employee="@Employee"
+                          RemoveEmployee="@RemoveEmployee"
+                          Editable="@(!ReadOnly)"
+                          Dense="@Dense"
+                          FullNameSelector="FullNameSelector"
+                          EmailSelector="EmailSelector"
+                          ThumbnailSelector="ThumbnailSelector" />
+        </MudField>
+    }
+    else
+    {
+        <MudAutocomplete @ref="@AutoComplete"
+                         @bind-Value="@Employee"
+                         T="T"
+                         Label="@Label"
+                         SearchFunc="SearchWrapper"
+                         ToStringFunc="@(e=> e==null ? null : FullName)"
+                         Strict="false"
+                         Dense="@Dense"
+                         ReadOnly="@ReadOnly"
+                         Required=@Required
+                         MaxItems="@MaxItems"
+                         ErrorText="@ErrorText"
+                         Variant=@Variant
+                         For="@For">
+
+            <ItemTemplate Context="e">
+                <EmployeeCard Dense="@Dense"
+                              Employee="e"
+                              Editable=false
+                              FullNameSelector="FullNameSelector"
+                              EmailSelector="EmailSelector"
+                              ThumbnailSelector="ThumbnailSelector" />
+            </ItemTemplate>
+            <ProgressIndicatorTemplate>
+                <MudProgressLinear Size="Size.Small" Indeterminate="true" Color="Color.Primary" />
+            </ProgressIndicatorTemplate>
+            <MoreItemsTemplate>
+                <MudText Align="Align.Center" Class="px-4 py-1">
+                    Only the first 10 employees are shown
+                </MudText>
+            </MoreItemsTemplate>
+            <NoItemsTemplate>
+                <MudText Align="Align.Center" Class="px-4 py-1">
+                    No employees found
+                </MudText>
+            </NoItemsTemplate>
+        </MudAutocomplete>
+    }
+</div>
+
+@code {
+    /// <summary>
+    /// Employee selected
+    /// </summary>
+    [Parameter]
+    public T? Employee
+    {
+        get => _employee;
+        set
+        {
+            if (!object.Equals(_employee, value))
+            {
+                _employee = value;
+                EmployeeChanged.InvokeAsync(value);
+            }
+
+        }
+    }
+    private T? _employee;
+
+    /// <summary>
+    /// Two-way binding function for Employee
+    /// </summary>
+    [Parameter]
+    public EventCallback<T?> EmployeeChanged { get; set; }
+
+    /// <summary>
+    /// Label or string displayed within the compoent
+    /// </summary>
+    ///
+    [Parameter]
+    public string Label { get; set; } = "";
+
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+
+    [Parameter]
+    public bool Dense { get; set; } = false;
+
+    [Parameter]
+    public bool DisableUnderline { get; set; } = false;
+
+    [Parameter]
+    public bool Required { get; set; } = false;
+
+    [Parameter]
+    public int MaxItems { get; set; } = 30;
+
+    [Parameter]
+    public string ErrorText { get; set; } = "Required";
+
+    [Parameter]
+    public MudBlazor.Variant Variant { get; set; } = Variant.Filled;
+
+    [Parameter]
+    public Expression<Func<T>>? For { get; set; }
+
+    [Parameter]
+    public Func<string, Task<IEnumerable<T>>>? SearchEmployees { get; set; }
+
+    [Parameter]
+    public Func<T, string?>? FullNameSelector { get; set; }
+
+    [Parameter]
+    public Func<T, string?>? EmailSelector { get; set; }
+
+    [Parameter]
+    public Func<T, byte[]?>? ThumbnailSelector { get; set; }
+
+    private string? FullName => FullNameSelector?.Invoke(Employee);
+    private string? Email => EmailSelector?.Invoke(Employee);
+    private byte[]? Thumbnail => ThumbnailSelector?.Invoke(Employee);
+
+
+    //allows us to call AutoComplete functions, like the clear function
+    private MudAutocomplete<T>? AutoComplete;
+
+    private void RemoveEmployee(T EmployeeToRemove)
+    {
+        Employee = default(T);
+        AutoComplete?.ClearAsync();
+    }
+
+    private async Task<IEnumerable<T>> SearchWrapper(string searchText, CancellationToken cancellationToken)
+    {
+        if (SearchEmployees == null)
+            return Enumerable.Empty<T>();
+
+        return await SearchEmployees(searchText);
+    }
+
+
+}

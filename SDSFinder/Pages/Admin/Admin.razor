@@ -10,10 +10,16 @@
             <OpenSDSAdminPage/>  
         </MudTabPanel>
     }
-    @if(isAdminIntercompany)
+    @if (isAdminIntercompany)
     {
         <MudTabPanel Text="Intercompany SDS">
             <InterCompanySDSAdminPage/>
+        </MudTabPanel>
+    }
+    @if (isAlerts)
+    {
+        <MudTabPanel Text="SDS Alerts">
+            <AlertsPage />
         </MudTabPanel>
     }
 </MudTabs>
@@ -22,6 +28,7 @@
 @code {
     private bool isAdminOpen = false;
     private bool isAdminIntercompany = false;
+    private bool isAlerts = false;
 
     protected override void OnInitialized()
     {
@@ -29,6 +36,7 @@
 
         isAdminOpen =  User.UserTitle.Contains(AppPermissions.ADMIN_OPEN);
         isAdminIntercompany =  User.UserTitle.Contains(AppPermissions.ADMIN_INTERCOMPANY);
+        isAlerts = User.UserTitle.Contains(AppPermissions.ADMIN_INTERCOMPANY) || User.UserTitle.Contains(AppPermissions.ADMIN_OPEN);
     }
 
 }
