@@ -8,6 +8,7 @@ using MudBlazor.Services;
 using SDSFinder.EFContexts;
 using SDSFinder.EFContexts;
 using SDSFinder.Modules.Repositories;
+using SDSFinder.Modules.Repositories.Interfaces;
 using SDSFinder.Modules.Services;
 using User = SDSFinder.Shared.User;
 
@@ -40,6 +41,7 @@ builder.Services.AddScoped<IDocumentRepository, DocumentRepository>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<IJobRepository, JobRepository>();
 builder.Services.AddScoped<ISiteRepository, SiteRepository>();
+builder.Services.AddScoped<IAlertRecipientRepository, AlertRecipientRepository>();
 
 builder.Services.AddScoped<IDocumentService, DocumentService>();
 builder.Services.AddScoped<IItemService, ItemService>();
