@@ -72,7 +72,7 @@ namespace SDSFinder.Modules.Services
             using IndAppContext context = await _contextFactory.CreateDbContextAsync();
 
             var country = GetCountryBeforeParenthesis(lang);
-            var languageCode = GetLanguageFromFormattedString(lang);
+            var languageCode = GetLanguageCodeFromFormattedString(lang);
             IndCountryLanguage? countryLanguage = await context.IndCountryLanguages.Where(x => x.IndCountry == country && x.IndLanguageCode == languageCode).FirstOrDefaultAsync();
             if (countryLanguage != null)
             {
@@ -90,11 +90,11 @@ namespace SDSFinder.Modules.Services
             fileName.Substring(0, 2) : fileName;
             var result = languageCode switch
             {
-                "cs" => "",
+                "cz" => "Czech",
+                "ko" => "Korean",
                 "de" => "German",
                 "en" => "English",
                 "es" => "Spanish",
-                "et" => "",
                 "fi" => "Finnish",
                 "fr" => "French",
                 "hu" => "Hungarian",
@@ -125,6 +125,23 @@ namespace SDSFinder.Modules.Services
             {
                 string code = formattedLanguage.Substring(start + 1, end - start - 1);
                 return GetLanguage(code); // use your existing switch method
+            }
+
+            return "Unsupported language"; // fallback if format is invalid
+        }
+        public string GetLanguageCodeFromFormattedString(string formattedLanguage)
+        {
+            if (string.IsNullOrWhiteSpace(formattedLanguage))
+                return "Unsupported language";
+
+            // Find the code inside parentheses
+            int start = formattedLanguage.IndexOf('(');
+            int end = formattedLanguage.IndexOf(')');
+
+            if (start >= 0 && end > start)
+            {
+                string code = formattedLanguage.Substring(start + 1, end - start - 1);
+                return code; // use your existing switch method
             }
 
             return "Unsupported language"; // fallback if format is invalid

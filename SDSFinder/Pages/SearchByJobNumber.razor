@@ -177,17 +177,20 @@
                     if (GHSLanguage != null)
                     {
                         string language = languageService.GetLanguage(document.FileName);
-                        string documnetGHSLanguage = languageService.GetLanguageFromFormattedString(GHSLanguage);
-                        if (language == documnetGHSLanguage || language == "English")
+                        string documentGHSLanguage = languageService.GetLanguageFromFormattedString(GHSLanguage);
+                        string GHSCountry = languageService.GetCountryBeforeParenthesis(documentGHSLanguage);
+                        (string? SDSLang,string? SDSRegion) countryLanguage = await languageService.GetLanguageFromCountryLanguageTable(GHSLanguage);
+                        string  sdsLanguage = languageService.GetLanguage(countryLanguage.SDSLang);
+                        string region = GetRegion(document.FileName);
+                        if ((language == documentGHSLanguage || language == "English") && region.Equals(countryLanguage.SDSRegion))
                         {
                             SDSTableResult tableResult = new()
                                 {
                                     ItemNumber = item.Item,
                                     ItemDescription = item.Description,
                                     PdfLocation = document?.FileLocation,
-                                    Language = language
+                                    Language = sdsLanguage
                                 };
-
                             tableResults.Add(tableResult);
                         }
                     }
@@ -220,6 +223,17 @@
         }
     }
     
+    public string GetRegion(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+            return string.Empty;
+
+        var parts = fileName.Split('_');
+        if (parts.Length >= 2)
+            return parts[1]; // region is the second part
+
+        return string.Empty;
+    }
    
     /// <summary>
     /// This is a function that gets called any time that MainLayout.razor re-renders.
