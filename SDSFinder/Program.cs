@@ -11,7 +11,7 @@ using SDSFinder.Modules.Repositories;
 using SDSFinder.Modules.Repositories.Interfaces;
 using SDSFinder.Modules.Services;
 using SDSFinder.Modules.Services.Implimentation;
-using SDSFinder.Modules.Services.Interface;
+using SDSFinder.Modules.Services;
 using User = SDSFinder.Shared.User;
 
 

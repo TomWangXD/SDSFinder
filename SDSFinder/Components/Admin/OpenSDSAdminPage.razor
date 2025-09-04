@@ -16,36 +16,45 @@
 @attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_OPEN)]
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
-    <div class="search-section">
-        <MudGrid>
-            <MudItem xs="4">
-                <div class="label-font-size">Safety Document</div>
-                <MudTextField T="string"
-                @ref="fileNameRef"
-                @bind-Value="fileName"
-                Text="@fileName"
-                TextChanged="(async(value) => {
-                                        fileName = value;})"
-                Variant="Variant.Filled" />
-            </MudItem>
-            <MudItem xs="4" Class="button">
-                <MudButton Variant="Variant.Filled" Size="Size.Large" Disabled="false" OnClick="@(async() => await GetTableResultByFileName(fileName))">
-                    <MudText>Search</MudText>
-                </MudButton>
-            </MudItem>
-            <MudItem xs="8">
-                <MudFileUpload T="IBrowserFile" Accept=".pdf" MaximumFileCount="1" OnFilesChanged="HandleFileUpload">
-                    <ActivatorContent>
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.CloudUpload">
-                           Add Open SDS
-                        </MudButton>
-                    </ActivatorContent>
-                </MudFileUpload>
-            </MudItem>
-        </MudGrid>
-    </div>
+    <MudCard Class="mb-6 elevation-3">
+        <div class="search-section">
+            <MudGrid Class="mb-4">
+                <MudItem xs="4">
+                    <div class="label-font-size">Safety Document</div>
+                        <MudTextField T="string"
+                                    @ref="fileNameRef"
+                                    @bind-Value="fileName"
+                                    Text="@fileName"
+                                    TextChanged="(async(value) => {
+                                                            fileName = value;})"
+                                    Variant="Variant.Filled" 
+                                    Placeholder="Enter file name..." />
+                </MudItem>
+                <MudItem xs="4" Class="button">
+                    <MudButton Variant="Variant.Filled" 
+                                Size="Size.Medium" 
+                                Color="Color.Primary"
+                                OnClick="@(async() => await GetTableResultByFileName(fileName))">
+                        <MudText>Search</MudText>
+                    </MudButton>
+                </MudItem>
+                <MudItem xs="8">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.UploadFile"
+                               HtmlTag="label"
+                               for="fileInput">
+                        Add Open SDS
+                    </MudButton>
+
+                    <InputFile id="fileInput"
+                               OnChange="HandleFileUpload"
+                               accept=".pdf,application/pdf"
+                               style="display: none;" />
+                </MudItem>
+            </MudGrid>
+        </div>
+    </MudCard>
     <div class="content-section">
         <MudGrid Class="table-pdf-container full-height" Spacing="0">
             <MudItem xs="12" md="6" Class="table-section">

@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System.Collections.Generic;
 
-namespace SDSFinder.Modules.Services.Interface;
+namespace SDSFinder.Modules.Services;
 public interface IAlertRecipientService
 {
     Task<IReadOnlyList<AlertRecipient>> GetAllAsync(CancellationToken ct = default);

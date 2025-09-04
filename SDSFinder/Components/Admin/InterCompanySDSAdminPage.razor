@@ -16,16 +16,12 @@
 
 @attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_INTERCOMPANY)]
 
-
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
-
     <MudCard Class="mb-6 elevation-3">
-        <MudCardContent>
-   
+        <div class="search-section">
             <MudGrid Class="mb-4">
-                <MudItem xs="8">
+                <MudItem xs="4">
                     <div class="label-font-size">Safety Document</div>
-                    <div class="d-flex align-items-end gap-2">
                         <MudTextField T="string"
                                         @ref="fileNameRef"
                                         @bind-Value="fileName"
@@ -33,13 +29,14 @@
                                         TextChanged="(async(value) => { fileName = value; })"
                                         Variant="Variant.Filled"
                                         Placeholder="Enter file name..." />
+                </MudItem>
+                <MudItem xs="4" Class="button">
                         <MudButton Variant="Variant.Filled"
                                     Size="Size.Medium"
                                     Color="Color.Primary"
                                     OnClick="@(async () => await GetTableResultByFileName(fileName))">
                             <MudText>Search</MudText>
                         </MudButton>
-                    </div>
                 </MudItem>
             </MudGrid>
 
@@ -84,7 +81,7 @@
 
             }
 
-        </MudCardContent>
+        </div>
     </MudCard>
 
     @if (TableResults != null)

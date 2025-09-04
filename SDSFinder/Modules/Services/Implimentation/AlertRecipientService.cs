@@ -1,5 +1,5 @@
 ﻿using SDSFinder.Modules.Repositories.Interfaces;
-using SDSFinder.Modules.Services.Interface;
+using SDSFinder.Modules.Services;
 
 namespace SDSFinder.Modules.Services.Implimentation;
 
