@@ -1,30 +1,72 @@
 ﻿@using SDSFinder.Components.EmployeePicker
 @using SDSFinder.Modules.Services
 @using SDSFinder.Modules.Repositories
+@using SDSFinder.EFModels
 
 @inject IConfiguration Configuration
 @inject IEmployeeService _employeeService
+@inject IAlertRecipientService _alertService
 
-<h3>Alerts Page</h3>
+@attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_OPEN)]
+@attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_INTERCOMPANY)]
 
-<MudContainer MaxWidth="MaxWidth.Medium">
-    <MudGrid>
-        <Picker @bind-Employee=@AssignedTo
-        Dense=false
-        SearchEmployees="SearchEmployees"
-        FullNameSelector="BuildEmployeeName"
-        EmailSelector="e => e?.Email"
-        ThumbnailSelector="e => e?.Thumbnail"
-        Variant="@Variant.Filled"
-        ReadOnly=false
-        Required=true
-        ErrorText="Please choose an assigned to" />
-    </MudGrid>
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
+    <MudCard Class="mb-6 elevation-3">
+    <div class="search-section">
+        <MudGrid>
+            <MudItem xs="4">
+                <div class="label-font-size">Alert Recipient</div>
+                <Picker @bind-Employee=@AssignedTo
+                        Dense=false
+                        SearchEmployees="SearchEmployees"
+                        FullNameSelector="BuildEmployeeName"
+                        EmailSelector="e => e?.Email"
+                        ThumbnailSelector="e => e?.Thumbnail"
+                        Variant="@Variant.Filled"
+                        ReadOnly=false
+                        Required=true
+                        ErrorText="Please choose an assigned to" />
+            </MudItem>
+                <MudItem xs="4" Class="button">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Medium"
+                           HtmlTag="label"
+                           OnClick="@(async() => await AddAlertRecipients())">
+                        <MudText>Add Alert Recipient</MudText>
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </div>
+    </MudCard>
+    <div class="content-section">
+        <MudGrid Class="table-pdf-container full-height" Spacing="0">
+            <MudItem xs="12" md="4" Class="table-section">
+                <MudTable Items="@TableResults" FixedHeader="true" Bordered="true">
+                    <HeaderContent>
+                        <MudTh>Alert Recipients</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Name">@context.UserName</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+
+            </MudItem>
+        </MudGrid>
+    </div>
 </MudContainer>
 
-
 @code {
+    public IReadOnlyList<AlertRecipient>? TableResults { get; set; } = null!;
+    private int? SelectedUserId;
+    private List<AlertRecipient> Users = new();
     private bool UserSelected = false;
+    private bool IsBusy;
+    private string? Message;
+    private bool CanAdd => !IsBusy && SelectedUserId != null;
     private CmEmployeeMaster? AssignedTo
     {
         get => _assignedTo;
@@ -46,8 +88,8 @@
     private CmEmployeeMaster? _assignedTo;
 
     protected override async Task OnInitializedAsync()
-    {        
-        
+    {
+        TableResults = await _alertService.GetAllAsync();
     }
 
     private string BuildEmployeeName(CmEmployeeMaster? employee)
@@ -78,6 +120,38 @@
         );
 
         return options;
+    }
+
+    private async Task AddAlertRecipients()
+    {
+        IsBusy = true;
+        Message = null;
+
+        try
+        {
+            var selected = _assignedTo; //.FirstOrDefault(u => u.Id == SelectedUserId);
+            if (selected is null)
+            {
+                Message = "Please select a user.";
+                return;
+            }
+
+            // Idempotent: SubscribeAsync creates or updates the record
+            await _alertService.SubscribeAsync(selected.Id, selected.FullName);
+
+            Message = $"Added {selected.FullName} to alert recipients.";
+            // If you maintain a local list/table of recipients on the page, refresh it here:
+            // await LoadRecipients();
+        }
+        catch (Exception ex)
+        {
+            // Keep the message user-friendly; log ex if you have logging
+            Message = "Could not add the user. Please try again.";
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
 }
