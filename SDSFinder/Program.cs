@@ -51,6 +51,7 @@ builder.Services.AddScoped<ISiteService, SiteService>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IActionItemService, ActionItemService>();
+builder.Services.AddScoped<ILanguageService, LanguageService>();
 builder.Services.AddScoped<IActionItemsClient,ActionItemsClient>();
 builder.Services.AddScoped<Indium.Common.Models.User>();
 builder.Services.AddScoped<SDSFinder.Shared.User>();

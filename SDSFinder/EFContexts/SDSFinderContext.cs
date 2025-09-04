@@ -36,7 +36,9 @@ public partial class SDSFinderContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Document__3214EC07E93C67FD");
 
             entity.ToTable("Document");
-
+            entity.Property(e => e.Id)
+                .ValueGeneratedOnAdd()   // EF expects DB to generate the value
+                .UseIdentityColumn();
             entity.Property(e => e.CreatedDate).HasColumnType("datetime");
             entity.Property(e => e.FileLocation).HasMaxLength(300);
             entity.Property(e => e.FileName).HasMaxLength(100);
