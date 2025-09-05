@@ -7,13 +7,6 @@ public class EmployeeService(IEmployeeRepository employeeRepository) : IEmployee
 {
     private readonly IEmployeeRepository _employeeRepository = employeeRepository;
 
-    public async Task<CmEmployeeMaster?> GetBy(Expression<Func<CmEmployeeMaster, bool>> selector)
-    {
-        return await _employeeRepository.GetBy(selector);
-    }
-
-    public async Task<IEnumerable<CmEmployeeMaster>?> GetLimitedListBy(Expression<Func<CmEmployeeMaster, bool>> selector, int take)
-    {
-        return await _employeeRepository.GetLimitedListBy(selector, take);
-    }
+    public Task<List<CmEmployeeMaster>> GetLimitedListBy(Expression<Func<CmEmployeeMaster, bool>> selector, int take)
+        => _employeeRepository.GetLimitedListBy(selector, take);
 }

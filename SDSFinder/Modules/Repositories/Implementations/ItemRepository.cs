@@ -4,33 +4,28 @@ namespace SDSFinder.Modules.Repositories
 {
     public class ItemRepository : IItemRepository
     {
-        public async Task<bool> ValidateItem(string item, IndAppContext context)
+        private readonly IDbContextFactory<IndAppContext> _contextFactory;
+
+        public ItemRepository(IDbContextFactory<IndAppContext> contextFactory)
         {
-            bool result = await context.ItemGlbls.AnyAsync(x => x.Item == item);
-            return result;
+            _contextFactory = contextFactory;
         }
 
-        public async Task<ItemGlbl?> Get(string item, IndAppContext context)
+        public async Task<bool> ValidateItem(string item)
         {
-            ItemGlbl? value = await context.ItemGlbls.Where(x => x.Item == item).FirstOrDefaultAsync();
-            return value;
+            await using IndAppContext context = await _contextFactory.CreateDbContextAsync();
+            return await context.ItemGlbls.AnyAsync(x => x.Item == item);
         }
-        public async Task<ItemGlbl?> GetBy(Expression<Func<ItemGlbl, bool>> selector, IndAppContext context)
+        public async Task<ItemGlbl?> GetBy(Expression<Func<ItemGlbl, bool>> selector)
         {
-            ItemGlbl? result = await context.ItemGlbls.Where(selector).OrderBy(x => x.Item).FirstOrDefaultAsync();
-            return result;
-        }
-
-        public async Task<List<ItemGlbl>> GetLimitedListBy(Expression<Func<ItemGlbl, bool>> selector, int take, IndAppContext context)
-        {
-            List<ItemGlbl> result = await context.ItemGlbls.Where(selector).OrderBy(x => x.Item).Take(take).ToListAsync();
-            return result;
+            await using IndAppContext context = await _contextFactory.CreateDbContextAsync();
+            return await context.ItemGlbls.Where(selector).OrderBy(x => x.Item).FirstOrDefaultAsync();
         }
 
-        public async Task<List<ItemGlbl>> GetListBy(Expression<Func<ItemGlbl, bool>> selector, IndAppContext context)
+        public async Task<List<ItemGlbl>> GetListBy(Expression<Func<ItemGlbl, bool>> selector)
         {
-            List<ItemGlbl> result = await context.ItemGlbls.Where(selector).OrderBy(x => x.Item).ToListAsync();
-            return result;
+            await using IndAppContext context = await _contextFactory.CreateDbContextAsync();
+            return await context.ItemGlbls.Where(selector).OrderBy(x => x.Item).ToListAsync();
         }
     }
    

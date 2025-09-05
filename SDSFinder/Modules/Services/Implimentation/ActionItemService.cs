@@ -14,7 +14,6 @@ public class ActionItemService : IActionItemService
     public IActionItemsClient _actionItemsClient;
     public IConfiguration _configuration;
     public User _user;
-    public IEmployeeService _employeeService;
     public IAlertRecipientService _alertRecipientService;
 
     public ActionItemService(IActionItemsClient actionItemsClient, IConfiguration configuration, User user, IAlertRecipientService alertRecipientService)
