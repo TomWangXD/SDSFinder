@@ -50,7 +50,7 @@ public partial class SDSFinderContext : DbContext
         {
             b.ToTable("AlertRecipients");     // matches your SQL table name
             b.HasKey(x => x.Id);
-            b.Property(x => x.UserId).IsRequired().HasMaxLength(100);
+            b.Property(x => x.UserId).IsRequired();
             b.Property(x => x.UserName).IsRequired().HasMaxLength(200);
 
             // Helpful constraint so a user can only appear once

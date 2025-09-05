@@ -55,10 +55,10 @@ public class AlertRecipientRepository : IAlertRecipientRepository
         await db.SaveChangesAsync(ct);
     }
 
-    public async Task DeleteAsync(int id, CancellationToken ct = default)
+    public async Task DeleteByUserIdAsync(int userId, CancellationToken ct = default)
     {
         await using var db = await _dbFactory.CreateDbContextAsync(ct);
-        var existing = await db.AlertRecipients.FirstOrDefaultAsync(x => x.Id == id, ct);
+        var existing = await db.AlertRecipients.FirstOrDefaultAsync(x => x.UserId == userId, ct);
         if (existing is null) return;
         db.AlertRecipients.Remove(existing);
         await db.SaveChangesAsync(ct);

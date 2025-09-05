@@ -15,13 +15,14 @@ public class ActionItemService : IActionItemService
     public IConfiguration _configuration;
     public User _user;
     public IEmployeeService _employeeService;
+    public IAlertRecipientService _alertRecipientService;
 
-    public ActionItemService(IActionItemsClient actionItemsClient, IConfiguration configuration, User user, IEmployeeService employeeService)
+    public ActionItemService(IActionItemsClient actionItemsClient, IConfiguration configuration, User user, IAlertRecipientService alertRecipientService)
     {
         _actionItemsClient = actionItemsClient;
         _configuration = configuration;
         _user = user;
-        _employeeService = employeeService;
+        _alertRecipientService = alertRecipientService;
     }
     public async Task CreateNewSDSActionItem(Document document)
     {
@@ -30,22 +31,22 @@ public class ActionItemService : IActionItemService
             string basePath = _configuration.GetValue<string>("AppLocation")
                     ?? throw new ArgumentException("Cannot get base path");
 
-            string employee = _configuration.GetValue<string>("ActionItemRecipient");
+            IReadOnlyList<AlertRecipient> recipients = await _alertRecipientService.GetAllAsync();
 
-            CmEmployeeMaster actionItemRecipient = await _employeeService.GetBy(x => x.FullName.Equals(employee));
+            List<AssignedToModel> assignedTo = recipients
+                .Select(r => new AssignedToModel
+                {
+                    UserAssigned = r.UserId,
+                    EscalationLevel = 0,
+                })
+                .ToList();
 
             ActionItemModel actionItemModel = new()
             {
                 Title = $"New SDS {document.FileName} has been added.",
                 URL = $"{basePath}/SDSFinder/",
                 Description = $"SDS {document.FileName} has been added to the {_configuration.GetValue<string>("Region")} environment of the SDS Finder App, please update Syteline Global Item records accordingly.",
-                AssignedTo = new List<AssignedToModel>() {
-                    new()
-                    {
-                        UserAssigned = actionItemRecipient.Id,
-                        EscalationLevel = 0,
-                    }
-                },
+                AssignedTo = assignedTo,
                 CreatedBy = _user.Employee.Id
 
             };

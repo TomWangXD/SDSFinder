@@ -137,7 +137,7 @@
             }
 
             // Idempotent: SubscribeAsync creates or updates the record
-            await _alertService.SubscribeAsync(selected.Id, selected.FullName);
+            await _alertService.AddAsync(selected.Id, selected.FullName);
 
             Message = $"Added {selected.FullName} to alert recipients.";
             // If you maintain a local list/table of recipients on the page, refresh it here:
