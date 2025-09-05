@@ -23,50 +23,43 @@
         <MudGrid>
             <MudItem xs="4">
                 <div class="label-font-size">Site</div>
-                <MudAutocomplete 
-                @bind-Value="@(site)"
-                T="CmSiteMaster"
-                Required="true"
-                Margin="@Margin.Dense"
-                Dense="true"
-                Variant="Variant.Filled"
-                SearchFunc="GetSites"
-                ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
-                MaxItems="100"
-                Clearable="true"
-                ErrorText="Please choose a site" 
-                Style="padding-top: 4px"
-                AnchorOrigin="Origin.CenterCenter"/>
-                <MudItem>
-                    <br />
-                </MudItem>
+                <MudAutocomplete @bind-Value="@(site)"
+                                 T="CmSiteMaster"
+                                 Required="true"
+                                 Margin="@Margin.Dense"
+                                 Dense="true"
+                                 Variant="Variant.Filled"
+                                 SearchFunc="GetSites"
+                                 ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
+                                 MaxItems="100"
+                                 Clearable="true"
+                                 ErrorText="Please choose a site"
+                                 Style="padding-top: 4px"
+                                 AnchorOrigin="Origin.CenterCenter" />
             </MudItem>
-
-
             <MudItem xs="4">
                 <div class="label-font-size">Job Number</div>
-                <MudTextField T="string" 
-                @ref="jobRef" 
-                @bind-value="jobNumber" 
-                ReadOnly="@ReadOnly" 
-                Text="@jobNumber"
-                MaxLength="10"
-                TextChanged="(async(value) => {
-                                    jobNumber = value;})"
-                OnBlur="@(async() => await JobNumberValidation(jobNumber, jobRef, site.SiteCode, Snackbar))"
-                Variant="Variant.Filled" 
-                />       
-                <MudItem>
-                    <br />
-                </MudItem>
+                <MudTextField T="string"
+                              @ref="jobRef"
+                              @bind-Value="jobNumber"
+                              ReadOnly="@ReadOnly"
+                              Text="@jobNumber"
+                              MaxLength="10"
+                              Margin="@Margin.Dense"
+                              Dense="true"
+                              Style="padding-top: 4px"
+                              TextChanged="(async(value) => { jobNumber = value; })"
+                              OnBlur="@(async() => await JobNumberValidation(jobNumber, jobRef, site.SiteCode, Snackbar))"
+                              Variant="Variant.Filled" />
             </MudItem>
             <MudItem xs="4" Class="button">
-                <MudButton Variant="Variant.Filled" Size="Size.Large" Disabled="@ReadOnly" OnClick="@(async() => await GetTableResult(jobNumber, site.SiteCode))">
+                <MudButton Variant="Variant.Filled"
+                           Size="Size.Medium"
+                           Color="Color.Primary"
+                           Disabled="@ReadOnly"
+                           OnClick="@(async() => await GetTableResult(jobNumber, site.SiteCode))">
                     <MudText>Search</MudText>
                 </MudButton>
-                <MudItem>
-                    <br/>
-                </MudItem>
             </MudItem>
         </MudGrid>
     </div>

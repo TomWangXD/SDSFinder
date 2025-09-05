@@ -9,7 +9,7 @@
 }
 
 .content-section {
-    height: calc(100vh - 120px);  Adjust based on your search section height 
+    height: calc(100vh - 120px); /* Adjust based on your search section height */
     overflow: hidden;
 }
 
