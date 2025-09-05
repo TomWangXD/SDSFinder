@@ -145,8 +145,14 @@
                 return;
             }
 
-            await _alertService.AddAsync(selected.Id, selected.FullName);
+            if (!await _alertService.AddAsync(selected.Id, selected.FullName))
+            {
+                Snackbar.Add($"{selected.FullName} already receives alerts.", Severity.Warning);
+                return;
+            }
+
             await LoadRecipients();
+            Snackbar.Add($"Added {selected.FullName} to alert recipients.", Severity.Success);
         }
         catch (Exception ex)
         {

@@ -10,9 +10,15 @@ public class AlertRecipientService : IAlertRecipientService
 
     public Task<IReadOnlyList<AlertRecipient>> GetAllAsync(CancellationToken ct = default) =>
         _repo.ListAsync(ct);
-    
-    public Task AddAsync(int userId, string userName, CancellationToken ct = default) =>
-        _repo.AddAsync(new AlertRecipient { UserId = userId, UserName = userName }, ct);
+
+    public async Task<bool> AddAsync(int userId, string userName, CancellationToken ct = default)
+    {
+        if (await _repo.ExistsByUserIdAsync(userId, ct)) return false;
+
+        await _repo.AddAsync(new AlertRecipient { UserId = userId, UserName = userName }, ct);
+
+        return true;
+    }
 
     public Task DeleteAsync(int userId, CancellationToken ct = default) =>
         _repo.DeleteByUserIdAsync(userId, ct);

@@ -6,6 +6,6 @@ namespace SDSFinder.Modules.Services;
 public interface IAlertRecipientService
 {
     Task<IReadOnlyList<AlertRecipient>> GetAllAsync(CancellationToken ct = default);
-    Task AddAsync(int userId, string userName, CancellationToken ct = default);
+    Task<bool> AddAsync(int userId, string userName, CancellationToken ct = default);
     Task DeleteAsync(int userId, CancellationToken ct = default);
 }
