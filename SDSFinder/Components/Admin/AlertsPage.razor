@@ -6,57 +6,68 @@
 @inject IConfiguration Configuration
 @inject IEmployeeService _employeeService
 @inject IAlertRecipientService _alertService
+@inject ISnackbar Snackbar
 
 @attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_OPEN)]
 @attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_INTERCOMPANY)]
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
     <MudCard Class="mb-6 elevation-3">
-    <div class="search-section">
-        <MudGrid>
-            <MudItem xs="4">
-                <div class="label-font-size">Alert Recipient</div>
-                <Picker @bind-Employee=@AssignedTo
-                        Dense=false
-                        SearchEmployees="SearchEmployees"
-                        FullNameSelector="BuildEmployeeName"
-                        EmailSelector="e => e?.Email"
-                        ThumbnailSelector="e => e?.Thumbnail"
-                        Variant="@Variant.Filled"
-                        ReadOnly=false
-                        Required=true
-                        ErrorText="Please choose an assigned to" />
-            </MudItem>
+        <div class="search-section">
+            <MudGrid Class="mb-4">
+                <MudItem xs="4">
+                    <div class="label-font-size">Alert Recipient</div>
+                    <Picker @bind-Employee=@AssignedTo
+                            Dense=false
+                            SearchEmployees="SearchEmployees"
+                            FullNameSelector="BuildEmployeeName"
+                            EmailSelector="e => e?.Email"
+                            ThumbnailSelector="e => e?.Thumbnail"
+                            Variant="@Variant.Filled"
+                            ReadOnly=false
+                            Required=true
+                            ErrorText="Please choose an assigned to" />
+                </MudItem>
                 <MudItem xs="4" Class="button">
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Size="Size.Medium"
-                           HtmlTag="label"
-                           OnClick="@(async() => await AddAlertRecipients())">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Size="Size.Medium"
+                               HtmlTag="label"
+                               OnClick="@(async() => await AddAlertRecipients())">
                         <MudText>Add Alert Recipient</MudText>
-                </MudButton>
-            </MudItem>
-        </MudGrid>
-    </div>
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </div>
     </MudCard>
-    <div class="content-section">
-        <MudGrid Class="table-pdf-container full-height" Spacing="0">
-            <MudItem xs="12" md="4" Class="table-section">
-                <MudTable Items="@TableResults" FixedHeader="true" Bordered="true">
-                    <HeaderContent>
-                        <MudTh>Alert Recipients</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Name">@context.UserName</MudTd>
-                    </RowTemplate>
-                    <PagerContent>
-                        <MudTablePager />
-                    </PagerContent>
-                </MudTable>
-
-            </MudItem>
-        </MudGrid>
-    </div>
+    <MudGrid Spacing="0">
+        <MudItem xs="12" md="4">
+            <MudTable Items="@TableResults" FixedHeader="true" Bordered="true">
+                <ColGroup>
+                    <col style="width: 150px" />
+                    <col style="width: 1%" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>Alert Recipients</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Name">@context.UserName</MudTd>
+                    <MudTd Class="d-flex justify-center" Style="padding:10">
+                        <MudButton Variant="Variant.Outlined"
+                                   StartIcon="@Icons.Material.Filled.Delete"
+                                   Size="Size.Small"
+                                   OnClick="@(async() => await DeleteAlertRecipient(context))">
+                            Delete
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </MudItem>
+    </MudGrid>
 </MudContainer>
 
 @code {
@@ -65,7 +76,6 @@
     private List<AlertRecipient> Users = new();
     private bool UserSelected = false;
     private bool IsBusy;
-    private string? Message;
     private bool CanAdd => !IsBusy && SelectedUserId != null;
     private CmEmployeeMaster? AssignedTo
     {
@@ -89,7 +99,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        TableResults = await _alertService.GetAllAsync();
+        await LoadRecipients();
     }
 
     private string BuildEmployeeName(CmEmployeeMaster? employee)
@@ -125,28 +135,42 @@
     private async Task AddAlertRecipients()
     {
         IsBusy = true;
-        Message = null;
 
         try
         {
-            var selected = _assignedTo; //.FirstOrDefault(u => u.Id == SelectedUserId);
+            var selected = _assignedTo;
             if (selected is null)
             {
-                Message = "Please select a user.";
+                Snackbar.Add("Please select a user.", Severity.Warning);
                 return;
             }
 
-            // Idempotent: SubscribeAsync creates or updates the record
             await _alertService.AddAsync(selected.Id, selected.FullName);
-
-            Message = $"Added {selected.FullName} to alert recipients.";
-            // If you maintain a local list/table of recipients on the page, refresh it here:
-            // await LoadRecipients();
+            await LoadRecipients();
         }
         catch (Exception ex)
         {
-            // Keep the message user-friendly; log ex if you have logging
-            Message = "Could not add the user. Please try again.";
+            Snackbar.Add("Could not add the user. Please try again.", Severity.Error);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private async Task LoadRecipients()
+    {
+        TableResults = await _alertService.GetAllAsync();
+    }
+
+    private async Task DeleteAlertRecipient(AlertRecipient recipient)
+    {
+        IsBusy = true;
+        try
+        {
+            await _alertService.DeleteAsync(recipient.UserId);
+            Snackbar.Add($"Removed {recipient.UserName} from alert recipients.", Severity.Success);
+            await LoadRecipients();
         }
         finally
         {

@@ -21,102 +21,94 @@
             <MudGrid Class="mb-4">
                 <MudItem xs="4">
                     <div class="label-font-size">Safety Document</div>
-                        <MudTextField T="string"
-                                    @ref="fileNameRef"
-                                    @bind-Value="fileName"
-                                    Text="@fileName"
-                                    TextChanged="(async(value) => {
-                                                            fileName = value;})"
-                                    Variant="Variant.Filled" 
-                                    Placeholder="Enter file name..." />
+                    <MudTextField T="string"
+                                  @ref="fileNameRef"
+                                  @bind-Value="fileName"
+                                  Text="@fileName"
+                                  TextChanged="(async(value) => { fileName = value; })"
+                                  Variant="Variant.Filled"
+                                  Placeholder="Enter file name..." />
                 </MudItem>
                 <MudItem xs="4" Class="button">
-                    <MudButton Variant="Variant.Filled" 
-                                Size="Size.Medium" 
-                                Color="Color.Primary"
-                                OnClick="@(async() => await GetTableResultByFileName(fileName))">
+                    <MudButton Variant="Variant.Filled"
+                               Size="Size.Medium"
+                               Color="Color.Primary"
+                               OnClick="@(async() => await GetTableResultByFileName(fileName))">
                         <MudText>Search</MudText>
                     </MudButton>
                 </MudItem>
-                <MudItem xs="8">
-                    <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               StartIcon="@Icons.Material.Filled.UploadFile"
-                               HtmlTag="label"
-                               for="fileInput">
-                        Add Open SDS
-                    </MudButton>
-
-                    <InputFile id="fileInput"
-                               OnChange="HandleFileUpload"
-                               accept=".pdf,application/pdf"
-                               style="display: none;" />
-                </MudItem>
             </MudGrid>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.UploadFile"
+                       HtmlTag="label"
+                       for="fileInput">
+                Add Open SDS
+            </MudButton>
+            <InputFile id="fileInput"
+                       OnChange="HandleFileUpload"
+                       accept=".pdf,application/pdf"
+                       style="display: none;" />
         </div>
     </MudCard>
-    <div class="content-section">
-        <MudGrid Class="table-pdf-container full-height" Spacing="0">
-            <MudItem xs="12" md="6" Class="table-section">
-                <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true" Height="400px">
-                    <ColGroup>
-                        <col style="width: 150px" />
-                        <col style="width: 150px" />
-                        <col style="width: 50px" />
-                    </ColGroup>
-                    <HeaderContent>
-                        <MudTh>File Name</MudTh>
-                        <MudTh>Safety Document</MudTh>
-                        <MudTh></MudTh>
-                    </HeaderContent>
+    <MudGrid Spacing="0">
+        <MudItem xs="12" md="6">
+            <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true">
+                <ColGroup>
+                    <col style="width: 150px" />
+                    <col style="width: 150px" />
+                    <col style="width: 50px" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>File Name</MudTh>
+                    <MudTh>Safety Document</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
 
-                    <RowTemplate>
-                        <MudTd DataLabel="FileName">@context.FileName</MudTd>
-                        <MudTd DataLabel="Saftey Document">
-                            <MudButton Href="@context.FileLocation"
-                                       Variant="Variant.Outlined"
-                                       StartIcon="@Icons.Material.Filled.PictureAsPdf"
-                                       Target="_blank"
-                                       Size="Size.Small"
-                                       OnClick="@(async() => await LoadSDS(context.FileLocation))">
-                                    @GetLanguage(context.FileName)
-                            </MudButton>
-                        </MudTd>                       
-                        <MudTd>
-                            <MudButton 
-                                        Variant="Variant.Outlined"
-                                        StartIcon="@Icons.Material.Filled.Delete"
-                                        Target="_blank"
-                                        Size="Size.Small"
-                                        OnClick="@(async() => await DeleteSDS(context))">
-                                        Delete
-                            </MudButton>
-                        </MudTd>
-                    </RowTemplate>
+                <RowTemplate>
+                    <MudTd DataLabel="FileName">@context.FileName</MudTd>
+                    <MudTd DataLabel="Saftey Document">
+                        <MudButton Href="@context.FileLocation"
+                                   Variant="Variant.Outlined"
+                                   StartIcon="@Icons.Material.Filled.PictureAsPdf"
+                                   Target="_blank"
+                                   Size="Size.Small"
+                                   OnClick="@(async() => await LoadSDS(context.FileLocation))">
+                            @GetLanguage(context.FileName)
+                        </MudButton>
+                    </MudTd>
+                    <MudTd>
+                        <MudButton Variant="Variant.Outlined"
+                                   StartIcon="@Icons.Material.Filled.Delete"
+                                   Target="_blank"
+                                   Size="Size.Small"
+                                   OnClick="@(async() => await DeleteSDS(context))">
+                            Delete
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
 
-                    <PagerContent>
-                        <MudTablePager />
-                    </PagerContent>
-                </MudTable>
-            </MudItem>
-            <MudItem xs="12" md="6" Class="pdf-section">
-                <iframe src="@GetPdfDataUrl()"
-                        class="full-height"
-                        width="100%"
-                        height="100%"
-                        style="border: none;">
-                    <p>Your browser does not support PDF viewing.</p>
-                </iframe>
-            </MudItem>
-        </MudGrid>
-    </div>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <iframe src="@GetPdfDataUrl()"
+                    width="100%"
+                    height="100%"
+                    style="border: none;">
+                <p>Your browser does not support PDF viewing.</p>
+            </iframe>
+        </MudItem>
+    </MudGrid>
 </MudContainer>
 @code {
     public List<Document>? TableResults { get; set; } = null!;
 
     private string selectedSDS = string.Empty;
     private byte[]? pdfBytes;
-    private string? fileName { get; set;}
+    private string? fileName { get; set; }
     private MudTextField<string> fileNameRef;
     private Document selectedDocument = new();
 
@@ -242,7 +234,7 @@
             {
                 selectedSDS = string.Empty;
             }
-            if(TableResults.Count() == 0)
+            if (TableResults.Count() == 0)
             {
                 TableResults = new();
                 ClearFileName();
@@ -264,19 +256,19 @@
             return;
 
 
-        var uploadFolder = config["ResourcePathOpen"]; 
+        var uploadFolder = config["ResourcePathOpen"];
 
 
         var filePath = Path.Combine(uploadFolder, file.Name);
         Document document = new()
-        {
-            FileLocation = filePath,
-            FileName = file.Name,
-            CreatedBy = user.Employee.Id,
-            CreatedDate = DateTime.Now,
-            IsDeleted = false,
-            SafetyDocumentId = AdminModules.GetSafetyID(file.Name)
-        };
+            {
+                FileLocation = filePath,
+                FileName = file.Name,
+                CreatedBy = user.Employee.Id,
+                CreatedDate = DateTime.Now,
+                IsDeleted = false,
+                SafetyDocumentId = AdminModules.GetSafetyID(file.Name)
+            };
         var documents = await documentService.GetAll();
 
         var filteredDocuments = documents.Where(x => x.FileName == document.FileName).ToList();
