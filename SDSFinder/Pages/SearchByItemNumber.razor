@@ -29,7 +29,6 @@
                               MaxLength="80"
                               Margin="@Margin.Dense"
                               Dense="true"
-                              Style="padding-top: 4px"
                               TextChanged="(async(value) => { itemNumber = value; })"
                               OnBlur="@(async() => await ItemNumberValidation(itemNumber, itemRef, Snackbar))"
                               Variant="Variant.Filled" />

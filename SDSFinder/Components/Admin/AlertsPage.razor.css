@@ -10,5 +10,6 @@
 
 ::deep .button {
     padding-left: 10px;
-    padding-top: 38px;
+    display: flex;
+    align-items: center;
 }

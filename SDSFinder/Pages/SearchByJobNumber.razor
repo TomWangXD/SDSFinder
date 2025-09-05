@@ -34,7 +34,6 @@
                                  MaxItems="100"
                                  Clearable="true"
                                  ErrorText="Please choose a site"
-                                 Style="padding-top: 4px"
                                  AnchorOrigin="Origin.CenterCenter" />
             </MudItem>
             <MudItem xs="4">
@@ -47,7 +46,6 @@
                               MaxLength="10"
                               Margin="@Margin.Dense"
                               Dense="true"
-                              Style="padding-top: 4px"
                               TextChanged="(async(value) => { jobNumber = value; })"
                               OnBlur="@(async() => await JobNumberValidation(jobNumber, jobRef, site.SiteCode, Snackbar))"
                               Variant="Variant.Filled" />
