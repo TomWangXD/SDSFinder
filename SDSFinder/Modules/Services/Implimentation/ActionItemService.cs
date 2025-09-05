@@ -23,6 +23,7 @@ public class ActionItemService : IActionItemService
         _user = user;
         _alertRecipientService = alertRecipientService;
     }
+
     public async Task CreateNewSDSActionItem(Document document)
     {
         try
@@ -56,6 +57,7 @@ public class ActionItemService : IActionItemService
             throw new Exception($"Unable to create Action Item! Error: {ex}");
         }
     }
+
     public async Task<Guid> CreateSDSActionItem(ActionItemModel actionItem)
     {
         try

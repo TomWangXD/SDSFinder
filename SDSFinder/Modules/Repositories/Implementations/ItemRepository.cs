@@ -16,6 +16,7 @@ namespace SDSFinder.Modules.Repositories
             await using IndAppContext context = await _contextFactory.CreateDbContextAsync();
             return await context.ItemGlbls.AnyAsync(x => x.Item == item);
         }
+
         public async Task<ItemGlbl?> GetBy(Expression<Func<ItemGlbl, bool>> selector)
         {
             await using IndAppContext context = await _contextFactory.CreateDbContextAsync();

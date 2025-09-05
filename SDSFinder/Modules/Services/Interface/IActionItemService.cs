@@ -7,4 +7,3 @@ public interface IActionItemService
     Task CreateNewSDSActionItem(Document document);
     Task<Guid> CreateSDSActionItem(ActionItemModel actionItem);
 }
-

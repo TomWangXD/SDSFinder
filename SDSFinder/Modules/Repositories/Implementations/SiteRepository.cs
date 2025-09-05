@@ -10,6 +10,7 @@ namespace SDSFinder.Modules.Repositories
         {
             _contextFactory = contextFactory;
         }
+
         public async Task<List<CmSiteMaster>> GetAll()
         {
             await using CommonContext context = await _contextFactory.CreateDbContextAsync();
@@ -18,6 +19,7 @@ namespace SDSFinder.Modules.Repositories
                 .AsNoTracking()
                 .ToListAsync();
         }
+
         public async Task<List<CmSiteMaster>> GetLimitedListBy(Expression<Func<CmSiteMaster, bool>> selector, int take)
         {
             await using CommonContext context = await _contextFactory.CreateDbContextAsync();

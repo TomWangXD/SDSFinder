@@ -6,4 +6,3 @@ public interface IEmployeeService
 {
     Task<List<CmEmployeeMaster>?> GetLimitedListBy(Expression<Func<CmEmployeeMaster, bool>> selector, int take);
 }
-

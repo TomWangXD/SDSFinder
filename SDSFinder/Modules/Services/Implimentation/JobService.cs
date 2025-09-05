@@ -18,6 +18,7 @@ public class JobService : IJobService
 
     public Task<string> ExpandJob(string jobNumber)
         => _jobRepository.ExpandJob(jobNumber);
+
     public Task<JobMst?> Get(string jobNumber, string site)
         => _jobRepository.Get(jobNumber, site);
 }
