@@ -1,17 +1,8 @@
-﻿.full-height {
-    height: 100vh;
-    overflow: hidden;
-}
-
-.search-section {
+﻿.search-section {
     padding: 16px;
     border-bottom: 1px solid var(--mud-palette-divider);
 }
 
-.content-section {
-    height: calc(100vh - 120px); /* Adjust based on your search section height */
-    overflow: hidden;
-}
 ::deep .button {
     padding-left: 10px;
     display: flex;

@@ -8,7 +8,7 @@
 @inject IDocumentService documentService;
 @inject ISnackbar Snackbar;
 
-<MudGrid Class="table-pdf-container full-height" Spacing="0">
+<MudGrid Class="table-pdf-container" Spacing="0">
     <MudItem xs="12" md="6" Class="table-section">
         <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true">
             <ColGroup>
@@ -47,11 +47,7 @@
         </MudTable>
     </MudItem>
     <MudItem xs="12" md="6" Class="pdf-section">
-        <iframe src="@GetPdfDataUrl()"
-            class="full-height"
-            width="100%"
-            height="100%"
-            style="border: none;">
+        <iframe src="@GetPdfDataUrl()" class="pdf-viewer">
             <p>Your browser does not support PDF viewing.</p>
         </iframe>
     </MudItem>
