@@ -16,98 +16,102 @@
 @attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_OPEN)]
 
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
-    <div class="search-section">
-        <MudGrid>
-            <MudItem xs="4">
-                <div class="label-font-size">Safety Document</div>
-                <MudTextField T="string"
-                @ref="fileNameRef"
-                @bind-Value="fileName"
-                Text="@fileName"
-                TextChanged="(async(value) => {
-                                        fileName = value;})"
-                Variant="Variant.Filled" />
-            </MudItem>
-            <MudItem xs="4" Class="button">
-                <MudButton Variant="Variant.Filled" Size="Size.Large" Disabled="false" OnClick="@(async() => await GetTableResultByFileName(fileName))">
-                    <MudText>Search</MudText>
-                </MudButton>
-            </MudItem>
-            <MudItem xs="8">
-                <MudFileUpload T="IBrowserFile" Accept=".pdf" MaximumFileCount="1" OnFilesChanged="HandleFileUpload">
-                    <ActivatorContent>
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.CloudUpload">
-                           Add Open SDS
+    <MudCard Class="mb-6 elevation-3">
+        <div class="search-section">
+            <MudGrid Class="mb-4">
+                <MudItem xs="4">
+                    <div class="label-font-size">Safety Document</div>
+                    <MudTextField T="string"
+                                  @ref="fileNameRef"
+                                  @bind-Value="fileName"
+                                  Text="@fileName"
+                                  TextChanged="(async(value) => { fileName = value; })"
+                                  Variant="Variant.Filled"
+                                  Placeholder="Enter file name..."
+                                  Margin="@Margin.Dense"
+                                  Dense="true"
+                                  Style="padding-top: 4px" />
+                </MudItem>
+                <MudItem xs="4" Class="button">
+                    <MudButton Variant="Variant.Filled"
+                               Size="Size.Medium"
+                               Color="Color.Primary"
+                               OnClick="@(async() => await GetTableResultByFileName(fileName))">
+                        <MudText>Search</MudText>
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.UploadFile"
+                       HtmlTag="label"
+                       for="fileInput">
+                Add Open SDS
+            </MudButton>
+            <InputFile id="fileInput"
+                       OnChange="HandleFileUpload"
+                       accept=".pdf,application/pdf"
+                       style="display: none;" />
+        </div>
+    </MudCard>
+    <MudGrid Spacing="0">
+        <MudItem xs="12" md="6">
+            <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true">
+                <ColGroup>
+                    <col style="width: 150px" />
+                    <col style="width: 150px" />
+                    <col style="width: 50px" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>File Name</MudTh>
+                    <MudTh>Safety Document</MudTh>
+                    <MudTh></MudTh>
+                </HeaderContent>
+
+                <RowTemplate>
+                    <MudTd DataLabel="FileName">@context.FileName</MudTd>
+                    <MudTd DataLabel="Saftey Document">
+                        <MudButton Href="@context.FileLocation"
+                                   Variant="Variant.Outlined"
+                                   StartIcon="@Icons.Material.Filled.PictureAsPdf"
+                                   Target="_blank"
+                                   Size="Size.Small"
+                                   OnClick="@(async() => await LoadSDS(context.FileLocation))">
+                            @GetLanguage(context.FileName)
                         </MudButton>
-                    </ActivatorContent>
-                </MudFileUpload>
-            </MudItem>
-        </MudGrid>
-    </div>
-    <div class="content-section">
-        <MudGrid Class="table-pdf-container full-height" Spacing="0">
-            <MudItem xs="12" md="6" Class="table-section">
-                <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true" Height="400px">
-                    <ColGroup>
-                        <col style="width: 150px" />
-                        <col style="width: 150px" />
-                        <col style="width: 50px" />
-                    </ColGroup>
-                    <HeaderContent>
-                        <MudTh>File Name</MudTh>
-                        <MudTh>Safety Document</MudTh>
-                        <MudTh></MudTh>
-                    </HeaderContent>
+                    </MudTd>
+                    <MudTd>
+                        <MudButton Variant="Variant.Outlined"
+                                   StartIcon="@Icons.Material.Filled.Delete"
+                                   Target="_blank"
+                                   Size="Size.Small"
+                                   OnClick="@(async() => await DeleteSDS(context))">
+                            Delete
+                        </MudButton>
+                    </MudTd>
+                </RowTemplate>
 
-                    <RowTemplate>
-                        <MudTd DataLabel="FileName">@context.FileName</MudTd>
-                        <MudTd DataLabel="Saftey Document">
-                            <MudButton Href="@context.FileLocation"
-                                       Variant="Variant.Outlined"
-                                       StartIcon="@Icons.Material.Filled.PictureAsPdf"
-                                       Target="_blank"
-                                       Size="Size.Small"
-                                       OnClick="@(async() => await LoadSDS(context.FileLocation))">
-                                    @GetLanguage(context.FileName)
-                            </MudButton>
-                        </MudTd>                       
-                        <MudTd>
-                            <MudButton 
-                                        Variant="Variant.Outlined"
-                                        StartIcon="@Icons.Material.Filled.Delete"
-                                        Target="_blank"
-                                        Size="Size.Small"
-                                        OnClick="@(async() => await DeleteSDS(context))">
-                                        Delete
-                            </MudButton>
-                        </MudTd>
-                    </RowTemplate>
-
-                    <PagerContent>
-                        <MudTablePager />
-                    </PagerContent>
-                </MudTable>
-            </MudItem>
-            <MudItem xs="12" md="6" Class="pdf-section">
-                <iframe src="@GetPdfDataUrl()"
-                        class="full-height"
-                        width="100%"
-                        height="100%"
-                        style="border: none;">
-                    <p>Your browser does not support PDF viewing.</p>
-                </iframe>
-            </MudItem>
-        </MudGrid>
-    </div>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <iframe src="@GetPdfDataUrl()"
+                    width="100%"
+                    height="100%"
+                    style="border: none;">
+                <p>Your browser does not support PDF viewing.</p>
+            </iframe>
+        </MudItem>
+    </MudGrid>
 </MudContainer>
 @code {
     public List<Document>? TableResults { get; set; } = null!;
 
     private string selectedSDS = string.Empty;
     private byte[]? pdfBytes;
-    private string? fileName { get; set;}
+    private string? fileName { get; set; }
     private MudTextField<string> fileNameRef;
     private Document selectedDocument = new();
 
@@ -233,7 +237,7 @@
             {
                 selectedSDS = string.Empty;
             }
-            if(TableResults.Count() == 0)
+            if (TableResults.Count() == 0)
             {
                 TableResults = new();
                 ClearFileName();
@@ -255,19 +259,19 @@
             return;
 
 
-        var uploadFolder = config["ResourcePathOpen"]; 
+        var uploadFolder = config["ResourcePathOpen"];
 
 
         var filePath = Path.Combine(uploadFolder, file.Name);
         Document document = new()
-        {
-            FileLocation = filePath,
-            FileName = file.Name,
-            CreatedBy = user.Employee.Id,
-            CreatedDate = DateTime.Now,
-            IsDeleted = false,
-            SafetyDocumentId = AdminModules.GetSafetyID(file.Name)
-        };
+            {
+                FileLocation = filePath,
+                FileName = file.Name,
+                CreatedBy = user.Employee.Id,
+                CreatedDate = DateTime.Now,
+                IsDeleted = false,
+                SafetyDocumentId = AdminModules.GetSafetyID(file.Name)
+            };
         var documents = await documentService.GetAll();
 
         var filteredDocuments = documents.Where(x => x.FileName == document.FileName).ToList();

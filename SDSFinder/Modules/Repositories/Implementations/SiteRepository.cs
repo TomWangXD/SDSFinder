@@ -1,31 +1,29 @@
-﻿
-
-using Microsoft.EntityFrameworkCore.Internal;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace SDSFinder.Modules.Repositories
 {
-    public class SiteRepository : ISiteRepository    
+    public class SiteRepository : ISiteRepository
     {
-        private readonly CommonContext _context;
+        private readonly IDbContextFactory<CommonContext> _contextFactory;
 
-        public SiteRepository(CommonContext context)
+        public SiteRepository(IDbContextFactory<CommonContext> contextFactory)
         {
-            _context = context;
+            _contextFactory = contextFactory;
         }
-        public async Task<List<CmSiteMaster>> GetAll(CommonContext context)
+
+        public async Task<List<CmSiteMaster>> GetAll()
         {
-            List<CmSiteMaster> sites = await context.CmSiteMasters
+            await using CommonContext context = await _contextFactory.CreateDbContextAsync();
+            return await context.CmSiteMasters
                 .OrderBy(x => x.SiteCode)
                 .AsNoTracking()
                 .ToListAsync();
-
-            return sites;
         }
-        public async Task<List<CmSiteMaster>> GetLimitedListBy(Expression<Func<CmSiteMaster, bool>> selector, int take, CommonContext context)
+
+        public async Task<List<CmSiteMaster>> GetLimitedListBy(Expression<Func<CmSiteMaster, bool>> selector, int take)
         {
-            List<CmSiteMaster> sites = await context.CmSiteMasters.Where(selector).OrderBy(x => x.SiteCode).Take(take).ToListAsync();
-            return sites;
+            await using CommonContext context = await _contextFactory.CreateDbContextAsync();
+            return await context.CmSiteMasters.Where(selector).OrderBy(x => x.SiteCode).Take(take).ToListAsync();
         }
     }
 }

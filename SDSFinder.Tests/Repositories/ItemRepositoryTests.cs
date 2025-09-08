@@ -59,11 +59,11 @@ namespace SDSFinder.Tests.Repositories
             IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
             AppContext = await AddItemsToMockDb(AppContext);
-            ItemRepository repo = new();
+            ItemRepository repo = new(StubAppContextFactory.Object);
 
             var item = "010000";
 
-            var validationResult = await repo.ValidateItem(item, AppContext);
+            var validationResult = await repo.ValidateItem(item);
             Assert.IsTrue(validationResult);
         }
 
@@ -73,57 +73,33 @@ namespace SDSFinder.Tests.Repositories
             IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
             AppContext = await AddItemsToMockDb(AppContext);
-            ItemRepository repo = new();
+            ItemRepository repo = new(StubAppContextFactory.Object);
 
             var item = "n/a";
 
-            var validationResult = await repo.ValidateItem(item, AppContext);
+            var validationResult = await repo.ValidateItem(item);
             Assert.IsFalse(validationResult);
-        }
-
-        [TestMethod]
-        public async Task Get_ReturnsCorrectItem()
-        {
-            var context = await AddItemsToMockDb(StubAppContextFactory.Object.CreateDbContext());
-            var repo = new ItemRepository();
-
-            var result = await repo.Get("010000", context);
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual("010000", result!.Item);
         }
 
         [TestMethod]
         public async Task GetBy_ReturnsCorrectItem()
         {
             var context = await AddItemsToMockDb(StubAppContextFactory.Object.CreateDbContext());
-            var repo = new ItemRepository();
+            var repo = new ItemRepository(StubAppContextFactory.Object);
 
-            var result = await repo.GetBy(x => x.Description.Contains("Desc B"), context);
+            var result = await repo.GetBy(x => x.Description.Contains("Desc B"));
 
             Assert.IsNotNull(result);
             Assert.AreEqual("020000", result!.Item);
         }
 
         [TestMethod]
-        public async Task GetLimitedListBy_ReturnsLimitedItems()
-        {
-            var context = await AddItemsToMockDb(StubAppContextFactory.Object.CreateDbContext());
-            var repo = new ItemRepository();
-
-            var results = await repo.GetLimitedListBy(x => x.Item.StartsWith("0"), 2, context);
-
-            Assert.AreEqual(2, results.Count);
-            Assert.IsTrue(results.All(r => r.Item.StartsWith("0")));
-        }
-
-        [TestMethod]
         public async Task GetListBy_ReturnsAllMatchingItems()
         {
             var context = await AddItemsToMockDb(StubAppContextFactory.Object.CreateDbContext());
-            var repo = new ItemRepository();
+            var repo = new ItemRepository(StubAppContextFactory.Object);
 
-            var results = await repo.GetListBy(x => x.Item.StartsWith("0"), context);
+            var results = await repo.GetListBy(x => x.Item.StartsWith("0"));
 
             Assert.AreEqual(3, results.Count);
             Assert.IsTrue(results.All(r => r.Item.StartsWith("0")));

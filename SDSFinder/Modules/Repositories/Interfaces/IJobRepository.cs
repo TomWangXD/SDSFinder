@@ -6,7 +6,8 @@ namespace SDSFinder.Modules.Repositories;
 
 public interface IJobRepository
 {
-    Task<bool> ValidateJob(string jobNumber, string site, IndAppContext context);
-    Task<JobMst?> Get(string jobNumber, string site, IndAppContext context);
+    Task<bool> ValidateJob(string jobNumber, string site);
+    Task<JobMst?> Get(string jobNumber, string site);
+    Task<string> ExpandJob(string jobNumber);
 }
 

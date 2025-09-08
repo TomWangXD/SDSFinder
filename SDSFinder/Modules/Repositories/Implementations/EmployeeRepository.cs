@@ -4,9 +4,16 @@ namespace SDSFinder.Modules.Repositories;
 
 public class EmployeeRepository : IEmployeeRepository
 {
-    public async Task<CmEmployeeMaster?> GetBy(Expression<Func<CmEmployeeMaster, bool>> selector, CommonContext context)
+    private readonly IDbContextFactory<CommonContext> _contextFactory;
+
+    public EmployeeRepository(IDbContextFactory<CommonContext> contextFactory)
     {
-        CmEmployeeMaster? result = await context.CmEmployeeMasters.Where(selector).OrderBy(x => x.FullName).FirstOrDefaultAsync();
-        return result;
+        _contextFactory = contextFactory;
+    }
+
+    public async Task<List<CmEmployeeMaster>> GetLimitedListBy(Expression<Func<CmEmployeeMaster, bool>> selector, int take)
+    {
+        await using CommonContext context = await _contextFactory.CreateDbContextAsync();
+        return await context.CmEmployeeMasters.Where(selector).OrderBy(x => x.FullName).Take(take).ToListAsync();
     }
 }

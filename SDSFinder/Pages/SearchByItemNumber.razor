@@ -22,18 +22,23 @@
             <MudItem xs="4">
                 <div class="label-font-size">Item Number</div>
                 <MudTextField T="string"
-                @ref="itemRef"
-                @bind-value="itemNumber"
-                ReadOnly="false"
-                Text="@itemNumber"
-                MaxLength="80"
-                TextChanged="(async(value) => {
-                                        itemNumber = value;})"
-                OnBlur="@(async() => await ItemNumberValidation(itemNumber, itemRef, Snackbar))"
-                Variant="Variant.Filled" />
+                              @ref="itemRef"
+                              @bind-Value="itemNumber"
+                              ReadOnly="false"
+                              Text="@itemNumber"
+                              MaxLength="80"
+                              Margin="@Margin.Dense"
+                              Dense="true"
+                              TextChanged="(async(value) => { itemNumber = value; })"
+                              OnBlur="@(async() => await ItemNumberValidation(itemNumber, itemRef, Snackbar))"
+                              Variant="Variant.Filled" />
             </MudItem>
             <MudItem xs="4" Class="button">
-                <MudButton Variant="Variant.Filled" Size="Size.Large" Disabled="@ReadOnly" OnClick="@(async() => await GetTableResultByItem(itemNumber!))">
+                <MudButton Variant="Variant.Filled"
+                           Size="Size.Medium"
+                           Color="Color.Primary"
+                           Disabled="@ReadOnly"
+                           OnClick="@(async() => await GetTableResultByItem(itemNumber!))">
                     <MudText>Search</MudText>
                 </MudButton>
             </MudItem>

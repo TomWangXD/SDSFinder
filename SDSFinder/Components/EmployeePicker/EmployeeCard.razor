@@ -1,0 +1,115 @@
+﻿@typeparam T
+
+<style>
+    .EmployeeCard {
+        overflow: hidden;
+        width: 100% !important;
+        min-width: 200px;
+    }
+
+    ::deep .mud-card-header {
+        padding: 4px;
+    }
+
+    ::deep .DenseCard {
+        height: 32px;
+        margin-top: -1px;
+    }
+
+        ::deep .DenseCard > .mud-card-header-avatar {
+            margin-right: 4px;
+            margin-inline-end: 4px;
+        }
+
+        ::deep .DenseCard > .mud-card-header-content > .mud-typography-body1 {
+            line-height: 18px;
+            width: max-content;
+        }
+
+        ::deep .DenseCard > .mud-card-header-content > .mud-typography-body2 {
+            line-height: 12px;
+            width: max-content;
+        }
+</style>
+
+<div class="EmployeeCard">
+    <MudCard Elevation="0">
+        <MudCardHeader Class="@(Dense ? "DenseCard" : string.Empty)">
+            <CardHeaderAvatar>
+                @if (Thumbnail is not null)
+                {
+                    <MudAvatar Size="@(Dense ? Size.Small : Size.Medium)">
+                        <MudImage Src=@($"data:image/png;base64,{Convert.ToBase64String(Thumbnail)}") Alt="@FullName" />
+                    </MudAvatar>
+                }
+                else
+                {
+                    <MudAvatar Size="@(Dense ? Size.Small : Size.Medium)" Color="Color.Primary">
+                        @(string.IsNullOrEmpty(FullName) ? 'U' : FullName.First())
+                    </MudAvatar>
+                }
+            </CardHeaderAvatar>
+            <CardHeaderContent>
+                <MudText Typo="Typo.body1">@FullName</MudText>
+                <MudText Typo="Typo.body2">@Email</MudText>
+            </CardHeaderContent>
+            <CardHeaderActions>
+                @if (Editable)
+                {
+                    <MudTooltip Text="Remove">
+                        <MudIconButton Size="@(Dense ? Size.Small : Size.Medium)" Icon="@Icons.Material.Filled.Close" Color="Color.Error" OnClick="DeleteEmployee" />
+                    </MudTooltip>
+                }
+            </CardHeaderActions>
+        </MudCardHeader>
+    </MudCard>
+</div>
+
+@code {
+    /// <summary>
+    /// Employee that this card is based on
+    /// </summary>
+    [Parameter, EditorRequired]
+    public T? Employee
+    {
+        get => employee;
+        set
+        {
+            if (employee is null || !employee.Equals(value))
+            {
+                employee = value;
+            }
+        }
+    }
+    private T? employee { get; set; } = default(T);
+
+    /// <summary>
+    /// Function that gets called when the "Remove" button is clicked
+    /// </summary>
+    [Parameter]
+    public EventCallback<T> RemoveEmployee { get; set; }
+
+    [Parameter]
+    public bool Editable { get; set; } = false;
+
+    [Parameter]
+    public bool Dense { get; set; } = false;
+
+    [Parameter]
+    public Func<T, string?>? FullNameSelector { get; set; }
+
+    [Parameter]
+    public Func<T, string?>? EmailSelector { get; set; }
+
+    [Parameter]
+    public Func<T, byte[]?>? ThumbnailSelector { get; set; }
+
+    private string? FullName => FullNameSelector?.Invoke(employee);
+    private string? Email => EmailSelector?.Invoke(employee);
+    private byte[]? Thumbnail => ThumbnailSelector?.Invoke(employee);
+
+    private async Task DeleteEmployee()
+    {
+        await RemoveEmployee.InvokeAsync(Employee);
+    }
+}

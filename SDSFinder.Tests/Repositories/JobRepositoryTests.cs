@@ -62,12 +62,12 @@ public class JobRepositoryTests
         IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
         AppContext = await AddJobToMockDb(AppContext);
-        JobRepository repo = new();
+        JobRepository repo = new(StubAppContextFactory.Object);
 
         var jobNumber = "J-1234567890";
         var site = "BPD";
 
-        var validationResult = await repo.ValidateJob(jobNumber, site, AppContext);
+        var validationResult = await repo.ValidateJob(jobNumber, site);
         Assert.IsTrue(validationResult);
     }
 
@@ -77,12 +77,12 @@ public class JobRepositoryTests
         IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
         AppContext = await AddJobToMockDb(AppContext);
-        JobRepository repo = new();
+        JobRepository repo = new(StubAppContextFactory.Object);
 
         var jobNumber = "n/a";
         var site = "n/a";
 
-        var validationResult = await repo.ValidateJob(jobNumber, site, AppContext);
+        var validationResult = await repo.ValidateJob(jobNumber, site);
         Assert.IsFalse(validationResult);
     }
 
@@ -92,12 +92,12 @@ public class JobRepositoryTests
         IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
         AppContext = await AddJobToMockDb(AppContext);
-        JobRepository repo = new();
+        JobRepository repo = new(StubAppContextFactory.Object);
 
         var jobNumber = "n/a";
         var site = "BPD";
 
-        var validationResult = await repo.ValidateJob(jobNumber, site, AppContext);
+        var validationResult = await repo.ValidateJob(jobNumber, site);
         Assert.IsFalse(validationResult);
     }
 
@@ -107,12 +107,12 @@ public class JobRepositoryTests
         IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
         AppContext = await AddJobToMockDb(AppContext);
-        JobRepository repo = new();
+        JobRepository repo = new(StubAppContextFactory.Object);
 
         var jobNumber = "J-1234567890";
         var site = "n/a";
 
-        var validationResult = await repo.ValidateJob(jobNumber, site, AppContext);
+        var validationResult = await repo.ValidateJob(jobNumber, site);
         Assert.IsFalse(validationResult);
     }
     [TestMethod]
@@ -121,12 +121,12 @@ public class JobRepositoryTests
         IndAppContext AppContext = StubAppContextFactory.Object.CreateDbContext();
 
         AppContext = await AddJobToMockDb(AppContext);
-        JobRepository repo = new();
+        JobRepository repo = new(StubAppContextFactory.Object);
 
         var jobNumber = "J-1234567890";
         var site = "BPD";
 
-        var getResult = await repo.Get(jobNumber, site, AppContext);
+        var getResult = await repo.Get(jobNumber, site);
         Assert.IsNotNull(getResult);
         Assert.AreEqual(getResult.Job, jobNumber);
 

@@ -1,5 +1,4 @@
-﻿
-namespace SDSFinder.Modules
+﻿namespace SDSFinder.Modules
 {
     public class ExpandKey
     {
@@ -12,9 +11,7 @@ namespace SDSFinder.Modules
                 command.CommandType = System.Data.CommandType.Text;
                 command.CommandText = "SELECT dbo.ExpandKy(" + keylength.ToString() + ",'" + value + "')";
                 result = command.ExecuteScalar().ToString();
-
             }
-
             return result;
         }
     }

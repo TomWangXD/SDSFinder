@@ -16,43 +16,43 @@
 
 @attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_INTERCOMPANY)]
 
-
 <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
-
     <MudCard Class="mb-6 elevation-3">
-        <MudCardContent>
-   
+        <div class="search-section">
             <MudGrid Class="mb-4">
-                <MudItem xs="8">
+                <MudItem xs="4">
                     <div class="label-font-size">Safety Document</div>
-                    <div class="d-flex align-items-end gap-2">
-                        <MudTextField T="string"
-                                        @ref="fileNameRef"
-                                        @bind-Value="fileName"
-                                        Text="@fileName"
-                                        TextChanged="(async(value) => { fileName = value; })"
-                                        Variant="Variant.Filled"
-                                        Placeholder="Enter file name..." />
-                        <MudButton Variant="Variant.Filled"
-                                    Size="Size.Medium"
-                                    Color="Color.Primary"
-                                    OnClick="@(async () => await GetTableResultByFileName(fileName))">
-                            <MudText>Search</MudText>
-                        </MudButton>
-                    </div>
+                    <MudTextField T="string"
+                                  @ref="fileNameRef"
+                                  @bind-Value="fileName"
+                                  Text="@fileName"
+                                  TextChanged="(async(value) => { fileName = value; })"
+                                  Variant="Variant.Filled"
+                                  Placeholder="Enter file name..."
+                                  Margin="@Margin.Dense"
+                                  Dense="true"
+                                  Style="padding-top: 4px" />
+                </MudItem>
+                <MudItem xs="4" Class="button">
+                    <MudButton Variant="Variant.Filled"
+                               Size="Size.Medium"
+                               Color="Color.Primary"
+                               OnClick="@(async () => await GetTableResultByFileName(fileName))">
+                        <MudText>Search</MudText>
+                    </MudButton>
                 </MudItem>
             </MudGrid>
 
             @if (selectedFile == null)
             {
                 <MudFileUpload T="IBrowserFile"
-                                Accept=".pdf"
-                                FilesChanged="UploadSinglePdf"
-                                MaximumFileCount="1">
+                               Accept=".pdf"
+                               FilesChanged="UploadSinglePdf"
+                               MaximumFileCount="1">
                     <ActivatorContent>
                         <MudButton Variant="Variant.Filled"
-                                    Color="Color.Primary"
-                                    StartIcon="@Icons.Material.Filled.UploadFile">
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.UploadFile">
                             Add InterCompany SDS
                         </MudButton>
                     </ActivatorContent>
@@ -62,93 +62,93 @@
             {
                 <div class="d-flex align-items-center gap-3 mt-4">
                     <MudButton Color="Color.Success"
-                                Variant="Variant.Filled"
-                                StartIcon="@Icons.Material.Filled.CloudUpload"
-                                OnClick="OnUploadClicked">
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.CloudUpload"
+                               OnClick="OnUploadClicked">
                         Upload
                     </MudButton>
 
                     <MudButton Color="Color.Error"
-                                Variant="Variant.Filled"
-                                StartIcon="@Icons.Material.Filled.Clear"
-                                OnClick="ClearFile">
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.Clear"
+                               OnClick="ClearFile">
                         Clear
                     </MudButton>
 
                     <MudText Color="Color.Primary"
-                                Class="mb-0 text-truncate"
-                                Style="max-width: 300px;">
+                             Class="mb-0 text-truncate"
+                             Style="max-width: 300px;">
                         @selectedFile.Name (@($"{selectedFile.Size / 1024} KB"))
                     </MudText>
                 </div>
 
             }
 
-        </MudCardContent>
+        </div>
     </MudCard>
 
     @if (TableResults != null)
     {
-            <MudGrid GutterSize="3" Class="mb-6">
+        <MudGrid GutterSize="3" Class="mb-6">
 
-                <MudItem xs="12" md="6">
-                    <MudPaper Class="pa-4 elevation-1">
-                        <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true">
-                            <ColGroup>
-                                <col style="width: 200px" />
-                                <col style="width: 25px" />
-                                <col style="width: 25px" />
-                            </ColGroup>
-                            <HeaderContent>
-                                <MudTh>File Name</MudTh>
-                                <MudTh>Safety Document</MudTh>
-                                <MudTh></MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="File Name">@context.FileName</MudTd>
-                                <MudTd DataLabel="Safety Document">
-                                    <MudButton Href="@context.FileLocation"
-                                               Variant="Variant.Filled"
-                                               StartIcon="@Icons.Material.Filled.PictureAsPdf"
-                                               Target="_blank"
-                                               Size="Size.Small"
-                                               OnClick="@(async () => await LoadSDS(context.FileLocation))">
-                                        @GetLanguage(context.FileName)
-                                    </MudButton>
-                                </MudTd>
-                                <MudTd DataLabel="Delete">
-                                    <MudButton Variant="Variant.Filled"
-                                               Color="Color.Error"
-                                               StartIcon="@Icons.Material.Filled.Delete"
-                                               OnClick="@(async () => await DeleteSDS(context))">
-                                        Delete
-                                    </MudButton>
-                                </MudTd>
-                            </RowTemplate>
-                            <PagerContent>
-                                <MudTablePager />
-                            </PagerContent>
-                        </MudTable>
-                    </MudPaper>
-                </MudItem>
+            <MudItem xs="12" md="6">
+                <MudPaper Class="pa-4 elevation-1">
+                    <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true">
+                        <ColGroup>
+                            <col style="width: 150px" />
+                            <col style="width: 150px" />
+                            <col style="width: 50px" />
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh>File Name</MudTh>
+                            <MudTh>Safety Document</MudTh>
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="File Name">@context.FileName</MudTd>
+                            <MudTd DataLabel="Safety Document">
+                                <MudButton Href="@context.FileLocation"
+                                           Variant="Variant.Filled"
+                                           StartIcon="@Icons.Material.Filled.PictureAsPdf"
+                                           Target="_blank"
+                                           Size="Size.Small"
+                                           OnClick="@(async () => await LoadSDS(context.FileLocation))">
+                                    @GetLanguage(context.FileName)
+                                </MudButton>
+                            </MudTd>
+                            <MudTd DataLabel="Delete">
+                                <MudButton Variant="Variant.Outlined"
+                                           StartIcon="@Icons.Material.Filled.Delete"
+                                           Size="Size.Small"
+                                           OnClick="@(async () => await DeleteSDS(context))">
+                                    Delete
+                                </MudButton>
+                            </MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
 
-                <MudItem xs="12" md="6">
-                    <MudPaper Class="pa-4 elevation-1">
-                        <MudText Align="Align.Center" Typo="Typo.h6" Class="fw-bold mb-2 mt-1">
-                            File Preview
-                        </MudText>
-                        <iframe src="@GetPdfDataUrl()"
-                                class="full-height"
-                                width="100%"
-                                height="100%"
-                                style="border: none;">
-                            <p>Your browser does not support PDF viewing.</p>
-                        </iframe>
-                    </MudPaper>
-                </MudItem>
+            <MudItem xs="12" md="6">
+                <MudPaper Class="pa-4 elevation-1">
+                    <MudText Align="Align.Center" Typo="Typo.h6" Class="fw-bold mb-2 mt-1">
+                        File Preview
+                    </MudText>
+                    <iframe src="@GetPdfDataUrl()"
+                            class="full-height"
+                            width="100%"
+                            height="100%"
+                            style="border: none;">
+                        <p>Your browser does not support PDF viewing.</p>
+                    </iframe>
+                </MudPaper>
+            </MudItem>
 
-            </MudGrid>
-        }
+        </MudGrid>
+    }
 
 
 
@@ -161,7 +161,7 @@
     public List<Document>? TableResults { get; set; } = null!;
     private string selectedSDS = string.Empty;
     private byte[]? pdfBytes;
-    private string? fileName { get; set;}
+    private string? fileName { get; set; }
     private MudTextField<string> fileNameRef;
     private Document selectedDocument = new();
     IBrowserFile? selectedFile;
@@ -292,7 +292,7 @@
             {
                 selectedSDS = string.Empty;
             }
-            if(TableResults.Count() == 0)
+            if (TableResults.Count() == 0)
             {
                 TableResults = new();
                 ClearFileName();
@@ -313,7 +313,7 @@
 
     private async Task OnUploadClicked()
     {
-        var file =selectedFile;
+        var file = selectedFile;
 
         if (file == null || file.ContentType != "application/pdf")
         {
@@ -331,14 +331,14 @@
         var uploadFolder = config["ResourcePathIntercompany"];
         var filePath = Path.Combine(uploadFolder, file.Name);
         Document document = new()
-        {
-            FileLocation = filePath,
-            FileName = file.Name,
-            CreatedBy = user.Employee.Id,
-            CreatedDate = DateTime.Now,
-            IsDeleted = false,
-            SafetyDocumentId = AdminModules.GetSafetyID(file.Name)
-        };
+            {
+                FileLocation = filePath,
+                FileName = file.Name,
+                CreatedBy = user.Employee.Id,
+                CreatedDate = DateTime.Now,
+                IsDeleted = false,
+                SafetyDocumentId = AdminModules.GetSafetyID(file.Name)
+            };
         var documents = await documentService.GetAll();
 
         var filteredDocuments = documents.Where(x => x.FileName == document.FileName).ToList();
