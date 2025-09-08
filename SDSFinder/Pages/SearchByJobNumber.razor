@@ -164,6 +164,7 @@
                 List<SDSTableResult?> tableResults = new();
                 foreach(Document document in documents)
                 {
+                    string region = GetRegion(document.FileName);
 
                     if (GHSLanguage != null)
                     {
@@ -172,7 +173,6 @@
                         string GHSCountry = languageService.GetCountryBeforeParenthesis(documentGHSLanguage);
                         (string? SDSLang,string? SDSRegion) countryLanguage = await languageService.GetLanguageFromCountryLanguageTable(GHSLanguage);
                         string  sdsLanguage = languageService.GetLanguage(countryLanguage.SDSLang);
-                        string region = GetRegion(document.FileName);
                         if ((language == documentGHSLanguage || language == "English") && region.Equals(countryLanguage.SDSRegion))
                         {
                             SDSTableResult tableResult = new()
@@ -180,13 +180,14 @@
                                     ItemNumber = item.Item,
                                     ItemDescription = item.Description,
                                     PdfLocation = document?.FileLocation,
-                                    Language = sdsLanguage
+                                    Language = sdsLanguage,
+                                    Region = countryLanguage.SDSRegion
                                 };
                             tableResults.Add(tableResult);
                         }
                     }
                     else
-                    {                   
+                    {
                         string language = languageService.GetLanguage(document.FileName);
 
                         SDSTableResult tableResult = new()
@@ -194,7 +195,8 @@
                                 ItemNumber = item.Item,
                                 ItemDescription = item.Description,
                                 PdfLocation = document?.FileLocation,
-                                Language = language
+                                Language = language,
+                                Region = region
                             };
                         tableResults.Add(tableResult);
                     }

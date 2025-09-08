@@ -131,12 +131,14 @@
                 foreach (Document document in documents)
                 {
                     string language = languageService.GetLanguage(document.FileName);
+                    string region = GetRegion(document.FileName);
                     SDSTableResult tableResult = new()
                         {
                             ItemNumber = fullItem.Item,
                             ItemDescription = fullItem.Description,
                             PdfLocation = document?.FileLocation ?? ReportFileLocationNotFound(fullItem),
-                            Language = language
+                            Language = language,
+                            Region = region
                         };
 
                     tableResults.Add(tableResult);
@@ -160,6 +162,18 @@
     {
         Snackbar.Add("Pdf location could not be found. Please contact IT", Severity.Error);
         Logger.LogError($"Item: {item.Item} is missing a pdf location");
+        return string.Empty;
+    }
+
+    public string GetRegion(string fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+            return string.Empty;
+
+        var parts = fileName.Split('_');
+        if (parts.Length >= 2)
+            return parts[1];
+
         return string.Empty;
     }
 
