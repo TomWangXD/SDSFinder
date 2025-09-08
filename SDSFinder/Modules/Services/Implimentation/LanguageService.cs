@@ -52,6 +52,15 @@ namespace SDSFinder.Modules.Services
                 _ => "Unsupported language"
             };
         }
+
+        public string GetRegion(string fileName)
+        {
+            if (string.IsNullOrWhiteSpace(fileName))
+                return string.Empty;
+            var parts = fileName.Split('_');
+            return parts.Length >= 2 ? parts[1] : string.Empty;
+        }
+
         public string GetLanguageFromFormattedString(string formattedLanguage)
         {
             if (string.IsNullOrWhiteSpace(formattedLanguage))

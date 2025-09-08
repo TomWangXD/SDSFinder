@@ -113,67 +113,61 @@
 
     private async Task GetTableResultByItem(string item)
     {
-        if (!string.IsNullOrEmpty(item))
+        TableResults = new();
+
+        if (string.IsNullOrWhiteSpace(item))
         {
-
-            ItemGlbl? fullItem = await itemService.GetBy(x => x.Item == item);
-
-            if (fullItem is null)
-            {
-                Snackbar.Add("Item could not be found", Severity.Info);
-                return;
-            }
-
-            List<Document> documents = await documentService.GetListBy(x => x.SafetyDocumentId != null && x.SafetyDocumentId == fullItem.IndSds);
-            if (documents.Count() > 0)
-            {
-                List<SDSTableResult?> tableResults = new();
-                foreach (Document document in documents)
-                {
-                    string language = languageService.GetLanguage(document.FileName);
-                    string region = GetRegion(document.FileName);
-                    SDSTableResult tableResult = new()
-                        {
-                            ItemNumber = fullItem.Item,
-                            ItemDescription = fullItem.Description,
-                            PdfLocation = document?.FileLocation ?? ReportFileLocationNotFound(fullItem),
-                            Language = language,
-                            Region = region
-                        };
-
-                    tableResults.Add(tableResult);
-
-                }
-                TableResults = tableResults;
-            }
-            else
-            {
-                Snackbar.Add($"No Safety Documents found with item:{fullItem.Item}", Severity.Info);
-            }
-        }
-        else
-        {
-            TableResults = new();
             Snackbar.Add("Please enter an item number", Severity.Info);
+            return;
         }
+
+        ItemGlbl? fullItem = await itemService.GetBy(x => x.Item == item);
+        if (fullItem is null)
+        {
+            Snackbar.Add("Item could not be found", Severity.Info);
+            return;
+        }
+
+        List<Document> documents = await GetDocuments(fullItem);
+        if (documents.Count == 0)
+        {
+            Snackbar.Add($"No Safety Documents found with item:{fullItem.Item}", Severity.Info);
+            return;
+        }
+
+        List<SDSTableResult> tableResults = new();
+        foreach (Document document in documents)
+        {
+            tableResults.Add(BuildTableResult(document, fullItem));
+        }
+
+        TableResults = tableResults;
+    }
+
+    private async Task<List<Document>> GetDocuments(ItemGlbl item)
+    {
+        return await documentService.GetListBy(x => x.SafetyDocumentId != null && x.SafetyDocumentId == item.IndSds);
+    }
+
+    private SDSTableResult BuildTableResult(Document document, ItemGlbl item)
+    {
+        string language = languageService.GetLanguage(document.FileName);
+        string region = languageService.GetRegion(document.FileName);
+
+        return new SDSTableResult
+            {
+                ItemNumber = item.Item,
+                ItemDescription = item.Description,
+                PdfLocation = document?.FileLocation ?? ReportFileLocationNotFound(item),
+                Language = language,
+                Region = region
+            };
     }
 
     private string ReportFileLocationNotFound(ItemGlbl item)
     {
         Snackbar.Add("Pdf location could not be found. Please contact IT", Severity.Error);
         Logger.LogError($"Item: {item.Item} is missing a pdf location");
-        return string.Empty;
-    }
-
-    public string GetRegion(string fileName)
-    {
-        if (string.IsNullOrWhiteSpace(fileName))
-            return string.Empty;
-
-        var parts = fileName.Split('_');
-        if (parts.Length >= 2)
-            return parts[1];
-
         return string.Empty;
     }
 
