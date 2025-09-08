@@ -1,6 +1,7 @@
 ﻿using Indium.Common.EFContexts;
 using Indium.Common.EFModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using SDSFinder.Modules.Repositories;
@@ -15,34 +16,37 @@ namespace SDSFinder.Tests.Repositories
 {
     [TestClass]
     public class SiteRepositoryTests
-    {        
-        private CommonContext GetInMemoryDbContext(string dbName)
+    {
+        private IDbContextFactory<CommonContext> GetInMemoryDbContextFactory(string dbName, bool seedData = true)
         {
             var options = new DbContextOptionsBuilder<CommonContext>()
                 .UseInMemoryDatabase(databaseName: dbName)
                 .Options;
 
-            var context = new CommonContext(options);
+            var factory = new PooledDbContextFactory<CommonContext>(options);
 
-            // Seed test data
-            context.CmSiteMasters.AddRange(
-                new CmSiteMaster { Id = 1, SiteCode = "A001", SiteName = "Site A", IsActive = true, TimeZone = "UTC"},
-                new CmSiteMaster { Id = 2, SiteCode = "B002", SiteName = "Site B", IsActive = true, TimeZone = "UTC"}
-            );
-            context.SaveChanges();
+            if (seedData)
+            {
+                using var context = factory.CreateDbContext();
+                context.CmSiteMasters.AddRange(
+                    new CmSiteMaster { Id = 1, SiteCode = "A001", SiteName = "Site A", IsActive = true, TimeZone = "UTC" },
+                    new CmSiteMaster { Id = 2, SiteCode = "B002", SiteName = "Site B", IsActive = true, TimeZone = "UTC" }
+                );
+                context.SaveChanges();
+            }
 
-            return context;
+            return factory;
         }
 
         [TestMethod]
         public async Task GetAll_ShouldReturnSitesOrderedBySiteCode()
         {
             // Arrange
-            var context = GetInMemoryDbContext("SiteDb_GetAll");
+            var context = GetInMemoryDbContextFactory("SiteDb_GetAll");
             var repo = new SiteRepository(context);
 
             // Act
-            List<CmSiteMaster> sites = await repo.GetAll(context);
+            List<CmSiteMaster> sites = await repo.GetAll();
 
             // Assert
             Assert.AreEqual(2, sites.Count);
@@ -58,11 +62,11 @@ namespace SDSFinder.Tests.Repositories
                 .UseInMemoryDatabase(databaseName: "SiteDb_Empty")
                 .Options;
 
-            using var context = new CommonContext(options); // No seeding
-            var repo = new SiteRepository(context);
+            var factory = GetInMemoryDbContextFactory("SiteDb_Empty", seedData: false);
+            var repo = new SiteRepository(factory);
 
             // Act
-            List<CmSiteMaster> sites = await repo.GetAll(context);
+            List<CmSiteMaster> sites = await repo.GetAll();
 
             // Assert
             Assert.IsNotNull(sites);
