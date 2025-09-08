@@ -46,11 +46,14 @@
             </PagerContent>
         </MudTable>
     </MudItem>
-    <MudItem xs="12" md="6" Class="pdf-section">
-        <iframe src="@GetPdfDataUrl()" class="pdf-viewer">
-            <p>Your browser does not support PDF viewing.</p>
-        </iframe>
-    </MudItem>
+    @if (pdfBytes != null)
+    {
+        <MudItem xs="12" md="6" Class="pdf-section">
+            <iframe src="@GetPdfDataUrl()" class="pdf-viewer">
+                <p>Your browser does not support PDF viewing.</p>
+            </iframe>
+        </MudItem>
+    }
 </MudGrid>
 
 @code {
