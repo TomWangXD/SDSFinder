@@ -18,7 +18,7 @@
 @inject IDocumentService documentService
 @inject ILanguageService languageService
 
-<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="full-height pa-0">
+<MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-0">
     <div class="search-section">
         <MudGrid>
             <MudItem xs="4">
@@ -55,13 +55,13 @@
                            Size="Size.Medium"
                            Color="Color.Primary"
                            Disabled="@ReadOnly"
-                           OnClick="@(async() => await GetTableResult(jobNumber, site.SiteCode))">
+                           OnClick="@(async() => await GetTableResults(jobNumber, site.SiteCode))">
                     <MudText>Search</MudText>
                 </MudButton>
             </MudItem>
         </MudGrid>
     </div>
-    <div class="content-section">
+    <div>
         <SDSSearchResultTable TableResults="TableResults"></SDSSearchResultTable>
     </div>
 </MudContainer>
@@ -87,7 +87,7 @@
         }
         set
         {
-            if(value is not null && _site != value)
+            if (value is not null && _site != value)
             {
                 _site = value;
                 ReadOnly = false;
@@ -130,7 +130,7 @@
 
     }
 
-    private async Task  JobNumberValidation(string jobNumber, MudTextField<string> jobRef, string site, ISnackbar snackbar)
+    private async Task JobNumberValidation(string jobNumber, MudTextField<string> jobRef, string site, ISnackbar snackbar)
     {
 
         var fullJob = await jobService.ExpandJob(jobNumber);
@@ -142,90 +142,94 @@
         }
     }
 
-    private async Task GetTableResult(string jobNumber, string site)
+    private async Task GetTableResults(string jobNumber, string site)
     {
         TableResults = new();
-        if(!string.IsNullOrEmpty(jobNumber))
+        if (string.IsNullOrWhiteSpace(jobNumber))
         {
-            JobMst? job = await jobService.Get(jobNumber, site);
-
-
-            ItemGlbl? item = await itemService.GetBy(x => x.Item == job.Item);
-            List<Document> documents = new();
-            if (item != null)
-            {
-                documents = await documentService.GetListBy(x => x.SafetyDocumentId != null && x.SafetyDocumentId.Equals(item.IndSds));
-            }
-            var GHSLanguages = await languageService.GetGHSLanguagesAsync(jobNumber, site);
-            var GHSLanguage = languageService.GetGHSLanguage(GHSLanguages);
-
-            if (documents.Count() > 0)
-            {
-                List<SDSTableResult?> tableResults = new();
-                foreach(Document document in documents)
-                {
-
-                    if (GHSLanguage != null)
-                    {
-                        string language = languageService.GetLanguage(document.FileName);
-                        string documentGHSLanguage = languageService.GetLanguageFromFormattedString(GHSLanguage);
-                        string GHSCountry = languageService.GetCountryBeforeParenthesis(documentGHSLanguage);
-                        (string? SDSLang,string? SDSRegion) countryLanguage = await languageService.GetLanguageFromCountryLanguageTable(GHSLanguage);
-                        string  sdsLanguage = languageService.GetLanguage(countryLanguage.SDSLang);
-                        string region = GetRegion(document.FileName);
-                        if ((language == documentGHSLanguage || language == "English") && region.Equals(countryLanguage.SDSRegion))
-                        {
-                            SDSTableResult tableResult = new()
-                                {
-                                    ItemNumber = item.Item,
-                                    ItemDescription = item.Description,
-                                    PdfLocation = document?.FileLocation,
-                                    Language = sdsLanguage
-                                };
-                            tableResults.Add(tableResult);
-                        }
-                    }
-                    else
-                    {                   
-                        string language = languageService.GetLanguage(document.FileName);
-
-                        SDSTableResult tableResult = new()
-                            {
-                                ItemNumber = item.Item,
-                                ItemDescription = item.Description,
-                                PdfLocation = document?.FileLocation,
-                                Language = language
-                            };
-                        tableResults.Add(tableResult);
-                    }
-                }
-                TableResults = tableResults;
-            }
-            if(TableResults == null || TableResults.Count() == 0)
-            {
-                ClearJob();
-                Snackbar.Add("No SDS Found for this Job Number at this Site", Severity.Info);
-            }
-        }
-        else
-        {
-            TableResults = new();
             Snackbar.Add("Please enter a Job Number", Severity.Info);
+            return;
+        }
+
+        JobMst? job = await jobService.Get(jobNumber, site);
+        ItemGlbl? item = await itemService.GetBy(x => x.Item == job.Item);
+        if (item is null)
+        {
+            ClearJob();
+            Snackbar.Add("No SDS Found for this Job Number at this Site", Severity.Info);
+            return;
+        }
+
+        List<Document> documents = await GetDocuments(item);
+        string? ghsLanguage = await GetGhsLanguageAsync(jobNumber, site);
+
+        List<SDSTableResult> results = new();
+        foreach (Document document in documents)
+        {
+            SDSTableResult? result = await BuildTableResultAsync(document, item, ghsLanguage);
+            if (result != null)
+            {
+                results.Add(result);
+            }
+        }
+
+        TableResults = results;
+
+        if (TableResults.Count == 0)
+        {
+            ClearJob();
+            Snackbar.Add("No SDS Found for this Job Number at this Site", Severity.Info);
         }
     }
-    
-    public string GetRegion(string fileName)
+
+    private async Task<List<Document>> GetDocuments(ItemGlbl item)
     {
-        if (string.IsNullOrWhiteSpace(fileName))
-            return string.Empty;
-
-        var parts = fileName.Split('_');
-        if (parts.Length >= 2)
-            return parts[1]; // region is the second part
-
-        return string.Empty;
+        return await documentService.GetListBy(x => x.SafetyDocumentId != null && x.SafetyDocumentId.Equals(item.IndSds));
     }
-   
+
+    private async Task<string?> GetGhsLanguageAsync(string jobNumber, string site)
+    {
+        var ghsLanguages = await languageService.GetGHSLanguagesAsync(jobNumber, site);
+        return languageService.GetGHSLanguage(ghsLanguages);
+    }
+
+    private async Task<SDSTableResult?> BuildTableResultAsync(Document document, ItemGlbl item, string? ghsLanguage)
+    {
+        string region = languageService.GetRegion(document.FileName);
+
+        if (ghsLanguage != null)
+        {
+            string language = languageService.GetLanguage(document.FileName);
+            string documentGhsLanguage = languageService.GetLanguageFromFormattedString(ghsLanguage);
+            (string? SDSLang, string? SDSRegion) countryLanguage = await languageService.GetLanguageFromCountryLanguageTable(ghsLanguage);
+            string sdsLanguage = languageService.GetLanguage(countryLanguage.SDSLang);
+
+            if ((language == documentGhsLanguage || language == "English") && region.Equals(countryLanguage.SDSRegion))
+            {
+                return new SDSTableResult
+                    {
+                        ItemNumber = item.Item,
+                        ItemDescription = item.Description,
+                        PdfLocation = document?.FileLocation,
+                        Language = sdsLanguage,
+                        Region = countryLanguage.SDSRegion
+                    };
+            }
+
+            return null;
+        }
+
+        string docLanguage = languageService.GetLanguage(document.FileName);
+        return new SDSTableResult
+            {
+                ItemNumber = item.Item,
+                ItemDescription = item.Description,
+                PdfLocation = document?.FileLocation,
+                Language = docLanguage,
+                Region = region
+            };
+    }
+
     /// <summary>
     /// This is a function that gets called any time that MainLayout.razor re-renders.
     /// </summary>
@@ -246,6 +250,4 @@
         jobRef = new();
         jobNumber = string.Empty;
     }
-
-
 }

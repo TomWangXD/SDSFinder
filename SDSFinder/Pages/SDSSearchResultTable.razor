@@ -8,25 +8,28 @@
 @inject IDocumentService documentService;
 @inject ISnackbar Snackbar;
 
-<MudGrid Class="table-pdf-container full-height" Spacing="0">
+<MudGrid Class="table-pdf-container" Spacing="0">
     <MudItem xs="12" md="6" Class="table-section">
-        <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true" Height="400px">
+        <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true">
             <ColGroup>
                 <col style="width: 150px" />
                 <col style="width: 150px" />
+                <col style="width: 100px" />
                 <col style="width: 50px" />
             </ColGroup>
             <HeaderContent>
                 <MudTh>Item</MudTh>
                 <MudTh>Description</MudTh>
+                <MudTh>Region</MudTh>
                 <MudTh>Safety Document</MudTh>
             </HeaderContent>
 
             <RowTemplate>
                 <MudTd DataLabel="Item">@context.ItemNumber</MudTd>
                 <MudTd DataLabel="Description">@context.ItemDescription</MudTd>
+                <MudTd DataLabel="Region">@context.Region</MudTd>
                 <MudTd DataLabel="Saftey Document">
-                    <MudButton 
+                    <MudButton
                     Href="@context.PdfLocation"
                     Variant="Variant.Outlined"
                     StartIcon="@Icons.Material.Filled.PictureAsPdf"
@@ -43,15 +46,14 @@
             </PagerContent>
         </MudTable>
     </MudItem>
-    <MudItem xs="12" md="6" Class="pdf-section">
-        <iframe src="@GetPdfDataUrl()"
-            class="full-height"
-            width="100%"
-            height="100%"
-            style="border: none;">
-            <p>Your browser does not support PDF viewing.</p>
-        </iframe>
-    </MudItem>
+    @if (pdfBytes != null)
+    {
+        <MudItem xs="12" md="6" Class="pdf-section">
+            <iframe src="@GetPdfDataUrl()" class="pdf-viewer">
+                <p>Your browser does not support PDF viewing.</p>
+            </iframe>
+        </MudItem>
+    }
 </MudGrid>
 
 @code {
