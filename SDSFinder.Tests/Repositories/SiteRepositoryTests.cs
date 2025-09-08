@@ -42,7 +42,7 @@ namespace SDSFinder.Tests.Repositories
             var repo = new SiteRepository(context);
 
             // Act
-            List<CmSiteMaster> sites = await repo.GetAll(context);
+            List<CmSiteMaster> sites = await repo.GetAll();
 
             // Assert
             Assert.AreEqual(2, sites.Count);
@@ -62,7 +62,7 @@ namespace SDSFinder.Tests.Repositories
             var repo = new SiteRepository(context);
 
             // Act
-            List<CmSiteMaster> sites = await repo.GetAll(context);
+            List<CmSiteMaster> sites = await repo.GetAll();
 
             // Assert
             Assert.IsNotNull(sites);
