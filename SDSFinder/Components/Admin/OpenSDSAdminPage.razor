@@ -4,6 +4,7 @@
 @using SDSFinder.EFContexts
 @using MudBlazor
 @using SDSFinder.Modules.Admin
+@using DevExpress.Blazor.PdfViewer
 
 @inject IJSRuntime JSRuntime
 @inject ILogger<Index> Logger
@@ -97,12 +98,10 @@
             </MudTable>
         </MudItem>
         <MudItem xs="12" md="6">
-            <iframe src="@GetPdfDataUrl()"
-                    width="100%"
-                    height="100%"
-                    style="border: none;">
-                <p>Your browser does not support PDF viewing.</p>
-            </iframe>
+            <DxPdfViewer DocumentContent="pdfBytes"
+                 DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
+                 CssClass="pdf-viewer" />
+            <p>Your browser does not support PDF viewing.</p>
         </MudItem>
     </MudGrid>
 </MudContainer>
