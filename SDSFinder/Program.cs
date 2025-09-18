@@ -35,6 +35,7 @@ builder.Services.Configure<DevExpress.Blazor.Configuration.GlobalOptions>(option
 {
     options.BootstrapVersion = BootstrapVersion.v5;
 });
+builder.Services.AddDevExpressServerSideBlazorPdfViewer();
 
 // Indium services and repositories
 builder.Services.AddScoped<TimeZoneService>();
