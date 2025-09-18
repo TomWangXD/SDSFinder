@@ -138,10 +138,25 @@
                     <MudText Align="Align.Center" Typo="Typo.h6" Class="fw-bold mb-2 mt-1">
                         File Preview
                     </MudText>
-                    <DxPdfViewer DocumentContent="pdfBytes"
-                        DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
-                        CssClass="pdf-viewer" />
-                    <p>Your browser does not support PDF viewing.</p>
+                    @if (pdfBytes != null)
+                    {
+                        <MudItem xs="12" md="6" Class="pdf-section">
+                        @if (pdfBytes is not null)
+                        {
+                            <DxPdfViewer DocumentContent="pdfBytes"
+                                DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
+                                CssClass="pdf-viewer" />
+
+                        <noscript>
+                        <p>Your browser does not support PDF viewing.</p>
+                        </noscript>
+                        }
+                    else
+                        {
+                        <p>Your browser does not support PDF viewing.</p>
+                        }
+                        </MudItem>
+                    }
                 </MudPaper>
             </MudItem>
 
