@@ -144,14 +144,16 @@
 
     private async Task GetTableResults(string jobNumber, string site)
     {
-        TableResults = new();
-        if (string.IsNullOrWhiteSpace(jobNumber))
+        TableResults = new();       
+        var fullJob = await jobService.ExpandJob(jobNumber);
+        if (string.IsNullOrWhiteSpace(fullJob))
         {
             Snackbar.Add("Please enter a Job Number", Severity.Info);
             return;
         }
 
-        JobMst? job = await jobService.Get(jobNumber, site);
+
+        JobMst? job = await jobService.Get(fullJob, site);
         ItemGlbl? item = await itemService.GetBy(x => x.Item == job.Item);
         if (item is null)
         {
@@ -161,7 +163,7 @@
         }
 
         List<Document> documents = await GetDocuments(item);
-        string? ghsLanguage = await GetGhsLanguageAsync(jobNumber, site);
+        string? ghsLanguage = await GetGhsLanguageAsync(fullJob, site);
 
         List<SDSTableResult> results = new();
         foreach (Document document in documents)
