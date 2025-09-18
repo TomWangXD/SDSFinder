@@ -3,6 +3,7 @@
 @using SDSFinder.EFModels
 @using SDSFinder.EFContexts
 @using MudBlazor
+@using DevExpress.Blazor.PdfViewer
 
 @inject ILogger<Index> Logger;
 @inject IDocumentService documentService;
@@ -49,9 +50,20 @@
     @if (pdfBytes != null)
     {
         <MudItem xs="12" md="6" Class="pdf-section">
-            <iframe src="@GetPdfDataUrl()" class="pdf-viewer">
-                <p>Your browser does not support PDF viewing.</p>
-            </iframe>
+            @if (pdfBytes is not null)
+    {
+        <DxPdfViewer DocumentContent="pdfBytes"
+                     DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
+                     CssClass="pdf-viewer" />
+
+        <noscript>
+            <p>Your browser does not support PDF viewing.</p>
+        </noscript>
+    }
+    else
+    {
+        <p>Your browser does not support PDF viewing.</p>
+    }
         </MudItem>
     }
 </MudGrid>
