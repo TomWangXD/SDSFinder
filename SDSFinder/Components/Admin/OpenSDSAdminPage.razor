@@ -98,10 +98,25 @@
             </MudTable>
         </MudItem>
         <MudItem xs="12" md="6">
-            <DxPdfViewer DocumentContent="pdfBytes"
-                 DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
-                 CssClass="pdf-viewer" />
-            <p>Your browser does not support PDF viewing.</p>
+            @if (pdfBytes != null)
+            {
+                <MudItem xs="12" md="6" Class="pdf-section">
+                    @if (pdfBytes is not null)
+                    {
+                        <DxPdfViewer DocumentContent="pdfBytes"
+                            DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
+                            CssClass="pdf-viewer" />
+
+                        <noscript>
+                        <p>Your browser does not support PDF viewing.</p>
+                        </noscript>
+                    }
+                    else
+                    {
+                        <p>Your browser does not support PDF viewing.</p>
+                    }
+                </MudItem>
+            }
         </MudItem>
     </MudGrid>
 </MudContainer>
