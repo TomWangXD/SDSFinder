@@ -140,12 +140,13 @@
                     </MudText>
                     @if (pdfBytes != null)
                     {
-                        <MudItem xs="12" md="6" Class="pdf-section">
+                        <MudItem xs="12" md="6" width="100%" height="100%" style="border: none;">
                         @if (pdfBytes is not null)
                         {
                             <DxPdfViewer DocumentContent="pdfBytes"
                                 DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
-                                CssClass="pdf-viewer" />
+                                CssClass="pdf-viewer"
+                                ZoomFactor="1.0"/>
 
                         <noscript>
                         <p>Your browser does not support PDF viewing.</p>
