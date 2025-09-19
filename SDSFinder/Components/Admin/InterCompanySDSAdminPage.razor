@@ -233,7 +233,7 @@
     {
         if (!string.IsNullOrEmpty(fileName))
         {
-            List<Document> documents = await documentService.GetListBy(x => x.FileName.Contains(fileName) && x.IsDeleted == false);
+            List<Document> documents = await documentService.GetListBy(x => x.FileName.Contains(fileName) && x.IsDeleted == false && x.FileLocation.Contains("Intercompany"));
             if (documents.Count() > 0)
             {
                 List<Document> tableResults = new();
