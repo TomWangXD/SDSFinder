@@ -204,7 +204,7 @@
         fileName.Substring(0, 2) : fileName;
         var result = languageCode switch
         {
-            "cs" => "",
+            "cs" or "cz" => "Czech",
             "de" => "German",
             "en" => "English",
             "es" => "Spanish",
