@@ -13,6 +13,7 @@
 @inject IConfiguration config
 @inject IActionItemService actionItemService;
 @inject User user
+@inject ILanguageService languageService;
 
 @attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_INTERCOMPANY)]
 
@@ -97,15 +98,18 @@
                         <ColGroup>
                             <col style="width: 150px" />
                             <col style="width: 150px" />
+                            <col style="width: 100px" />
                             <col style="width: 50px" />
                         </ColGroup>
                         <HeaderContent>
                             <MudTh>File Name</MudTh>
+                            <MudTh>Region</MudTh>
                             <MudTh>Safety Document</MudTh>
                             <MudTh></MudTh>
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd DataLabel="File Name">@context.FileName</MudTd>
+                            <MudTd DataLabel="Region">@GetRegion(context.FileName)</MudTd>
                             <MudTd DataLabel="Safety Document">
                                 <MudButton Href="@context.FileLocation"
                                            Variant="Variant.Filled"
@@ -279,6 +283,11 @@
             "zh" => "Chinese",
             _ => "Unsupported language"
         };
+    }
+
+    private string GetRegion(string fileName)
+    {
+        return languageService.GetRegion(fileName);
     }
 
     private async Task DeleteSDS(Document document)
