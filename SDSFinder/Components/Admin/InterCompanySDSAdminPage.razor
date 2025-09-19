@@ -133,7 +133,7 @@
                 </MudPaper>
             </MudItem>
 
-            <MudItem Class="table-pdf-container" xs="12" md="6">
+            <MudItem xs="12" md="6">
                 <MudPaper Class="pa-4 elevation-1">
                     <MudText Align="Align.Center" Typo="Typo.h6" Class="fw-bold mb-2 mt-1">
                         File Preview
@@ -145,7 +145,7 @@
                         {
                             <DxPdfViewer DocumentContent="pdfBytes"
                                 DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
-                                CssClass="pdf-viewer"
+                                CssClass="component-class"
                                 ZoomLevel="1.0"/>
 
                         <noscript>
