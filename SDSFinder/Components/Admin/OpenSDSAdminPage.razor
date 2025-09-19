@@ -13,6 +13,7 @@
 @inject IConfiguration config
 @inject IActionItemService actionItemService;
 @inject SDSFinder.Shared.User user
+@inject ILanguageService languageService;
 
 @attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_OPEN)]
 
@@ -61,16 +62,19 @@
                 <ColGroup>
                     <col style="width: 150px" />
                     <col style="width: 150px" />
+                    <col style="width: 100px" />
                     <col style="width: 50px" />
                 </ColGroup>
                 <HeaderContent>
                     <MudTh>File Name</MudTh>
+                    <MudTh>Region</MudTh>                    
                     <MudTh>Safety Document</MudTh>
                     <MudTh></MudTh>
                 </HeaderContent>
 
                 <RowTemplate>
                     <MudTd DataLabel="FileName">@context.FileName</MudTd>
+                    <MudTd DataLabel="Region">@GetRegion(context.FileName)</MudTd>
                     <MudTd DataLabel="Saftey Document">
                         <MudButton Href="@context.FileLocation"
                                    Variant="Variant.Outlined"
@@ -240,6 +244,10 @@
             _ => "Unsupported language"
         };
         return result;
+    }
+    private string GetRegion(string fileName)
+    {
+        return languageService.GetRegion(fileName);
     }
     private async Task DeleteSDS(Document document)
     {
