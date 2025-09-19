@@ -4,6 +4,7 @@
 @using SDSFinder.EFContexts
 @using MudBlazor
 @using SDSFinder.Modules.Admin
+@using DevExpress.Blazor.PdfViewer
 @using User = SDSFinder.Shared.User;
 
 @inject IJSRuntime JSRuntime
@@ -137,13 +138,26 @@
                     <MudText Align="Align.Center" Typo="Typo.h6" Class="fw-bold mb-2 mt-1">
                         File Preview
                     </MudText>
-                    <iframe src="@GetPdfDataUrl()"
-                            class="full-height"
-                            width="100%"
-                            height="100%"
-                            style="border: none;">
+                    @if (pdfBytes != null)
+                    {
+                        <MudItem width="100%" height="100%" style="border: none;">
+                        @if (pdfBytes is not null)
+                        {
+                            <DxPdfViewer DocumentContent="pdfBytes"
+                                DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
+                                CssClass="component-class"
+                                ZoomLevel="1.0"/>
+
+                        <noscript>
                         <p>Your browser does not support PDF viewing.</p>
-                    </iframe>
+                        </noscript>
+                        }
+                    else
+                        {
+                        <p>Your browser does not support PDF viewing.</p>
+                        }
+                        </MudItem>
+                    }
                 </MudPaper>
             </MudItem>
 
