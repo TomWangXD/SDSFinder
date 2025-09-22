@@ -5,7 +5,6 @@
 @using MudBlazor
 @using SDSFinder.Modules.Admin
 @using DevExpress.Blazor.PdfViewer
-@using User = SDSFinder.Shared.User;
 
 @inject IJSRuntime JSRuntime
 @inject ILogger<Index> Logger
@@ -13,7 +12,7 @@
 @inject ISnackbar Snackbar
 @inject IConfiguration config
 @inject IActionItemService actionItemService;
-@inject User user
+@inject SDSFinder.Shared.User user
 @inject ILanguageService languageService;
 
 @attribute [Authorize(Policy = AuthorizationPolicies.ADMIN_INTERCOMPANY)]
@@ -85,14 +84,12 @@
                 </div>
 
             }
-
         </div>
     </MudCard>
 
     @if (TableResults != null)
     {
         <MudGrid GutterSize="3" Class="mb-6">
-
             <MudItem xs="12" md="6">
                 <MudPaper Class="pa-4 elevation-1">
                     <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true">
@@ -121,9 +118,10 @@
                                     @GetLanguage(context.FileName)
                                 </MudButton>
                             </MudTd>
-                            <MudTd DataLabel="Delete">
+                            <MudTd>
                                 <MudButton Variant="Variant.Outlined"
                                            StartIcon="@Icons.Material.Filled.Delete"
+                                           Target="_blank"
                                            Size="Size.Small"
                                            OnClick="@(async () => await DeleteSDS(context))">
                                     Delete
@@ -167,12 +165,7 @@
 
         </MudGrid>
     }
-
-
-
 </MudContainer>
-
-
 
 @code {
 
@@ -246,7 +239,6 @@
         return $"data:application/pdf;base64,{base64}";
     }
 
-
     private async Task GetTableResultByFileName(string fileName)
     {
         if (!string.IsNullOrEmpty(fileName))
@@ -273,30 +265,7 @@
 
     private string GetLanguage(string fileName)
     {
-        string code = !string.IsNullOrWhiteSpace(fileName) && fileName.Length >= 2
-            ? fileName.Substring(0, 2).ToLower()
-            : fileName;
-
-        return code switch
-        {
-            "de" => "German",
-            "en" => "English",
-            "es" => "Spanish",
-            "fi" => "Finnish",
-            "fr" => "French",
-            "hu" => "Hungarian",
-            "it" => "Italian",
-            "ms" => "Malay",
-            "no" => "Norwegian",
-            "pl" => "Polish",
-            "pt" => "Portuguese",
-            "ro" => "Romanian",
-            "ru" => "Russian",
-            "sv" => "Swedish",
-            "zf" => "Chinese (Simplified)",
-            "zh" => "Chinese",
-            _ => "Unsupported language"
-        };
+        return languageService.GetLanguage(fileName);
     }
 
     private string GetRegion(string fileName)

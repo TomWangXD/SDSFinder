@@ -30,12 +30,13 @@ namespace SDSFinder.Modules.Services
             string languageCode = !string.IsNullOrWhiteSpace(fileName) && fileName.Length >= 2 ?
                 fileName.Substring(0, 2) : fileName;
             return languageCode switch
-            { 
-                "cz" => "Czech",
+            {
+                "cs" or "cz" => "Czech",
                 "ko" => "Korean",
                 "de" => "German",
                 "en" => "English",
                 "es" => "Spanish",
+                "et" => "",
                 "fi" => "Finnish",
                 "fr" => "French",
                 "hu" => "Hungarian",

@@ -43,96 +43,138 @@
                     </MudButton>
                 </MudItem>
             </MudGrid>
-            <MudButton Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       StartIcon="@Icons.Material.Filled.UploadFile"
-                       HtmlTag="label"
-                       for="fileInput">
-                Add Open SDS
-            </MudButton>
-            <InputFile id="fileInput"
-                       OnChange="HandleFileUpload"
-                       accept=".pdf,application/pdf"
-                       style="display: none;" />
+
+            @if (selectedFile == null)
+            {
+                <MudFileUpload T="IBrowserFile"
+                               Accept=".pdf"
+                               FilesChanged="UploadSinglePdf"
+                               MaximumFileCount="1">
+                    <ActivatorContent>
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   StartIcon="@Icons.Material.Filled.UploadFile">
+                            Add Open SDS
+                        </MudButton>
+                    </ActivatorContent>
+                </MudFileUpload>
+            }
+            else
+            {
+                <div class="d-flex align-items-center gap-3 mt-4">
+                    <MudButton Color="Color.Success"
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.CloudUpload"
+                               OnClick="OnUploadClicked">
+                        Upload
+                    </MudButton>
+
+                    <MudButton Color="Color.Error"
+                               Variant="Variant.Filled"
+                               StartIcon="@Icons.Material.Filled.Clear"
+                               OnClick="ClearFile">
+                        Clear
+                    </MudButton>
+
+                    <MudText Color="Color.Primary"
+                             Class="mb-0 text-truncate"
+                             Style="max-width: 300px;">
+                        @selectedFile.Name (@($"{selectedFile.Size / 1024} KB"))
+                    </MudText>
+                </div>
+
+            }
         </div>
     </MudCard>
-    <MudGrid Spacing="0">
-        <MudItem xs="12" md="6">
-            <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true">
-                <ColGroup>
-                    <col style="width: 150px" />
-                    <col style="width: 150px" />
-                    <col style="width: 100px" />
-                    <col style="width: 50px" />
-                </ColGroup>
-                <HeaderContent>
-                    <MudTh>File Name</MudTh>
-                    <MudTh>Region</MudTh>                    
-                    <MudTh>Safety Document</MudTh>
-                    <MudTh></MudTh>
-                </HeaderContent>
 
-                <RowTemplate>
-                    <MudTd DataLabel="FileName">@context.FileName</MudTd>
-                    <MudTd DataLabel="Region">@GetRegion(context.FileName)</MudTd>
-                    <MudTd DataLabel="Saftey Document">
-                        <MudButton Href="@context.FileLocation"
-                                   Variant="Variant.Outlined"
-                                   StartIcon="@Icons.Material.Filled.PictureAsPdf"
-                                   Target="_blank"
-                                   Size="Size.Small"
-                                   OnClick="@(async() => await LoadSDS(context.FileLocation))">
-                            @GetLanguage(context.FileName)
-                        </MudButton>
-                    </MudTd>
-                    <MudTd>
-                        <MudButton Variant="Variant.Outlined"
-                                   StartIcon="@Icons.Material.Filled.Delete"
-                                   Target="_blank"
-                                   Size="Size.Small"
-                                   OnClick="@(async() => await DeleteSDS(context))">
-                            Delete
-                        </MudButton>
-                    </MudTd>
-                </RowTemplate>
+    @if (TableResults != null)
+    {
+        <MudGrid GutterSize="3" Class="mb-6">
+            <MudItem xs="12" md="6">
+                <MudPaper Class="pa-4 elevation-1">
+                    <MudTable Items="@TableResults" Hover="true" FixedHeader="true" Bordered="true">
+                        <ColGroup>
+                            <col style="width: 150px" />
+                            <col style="width: 150px" />
+                            <col style="width: 100px" />
+                            <col style="width: 50px" />
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh>File Name</MudTh>
+                            <MudTh>Region</MudTh>                    
+                            <MudTh>Safety Document</MudTh>
+                            <MudTh></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="FileName">@context.FileName</MudTd>
+                            <MudTd DataLabel="Region">@GetRegion(context.FileName)</MudTd>
+                            <MudTd DataLabel="Saftey Document">
+                                <MudButton Href="@context.FileLocation"
+                                           Variant="Variant.Outlined"
+                                           StartIcon="@Icons.Material.Filled.PictureAsPdf"
+                                           Target="_blank"
+                                           Size="Size.Small"
+                                           OnClick="@(async() => await LoadSDS(context.FileLocation))">
+                                           @GetLanguage(context.FileName)
+                                </MudButton>
+                            </MudTd>
+                            <MudTd>
+                                <MudButton Variant="Variant.Outlined"
+                                           StartIcon="@Icons.Material.Filled.Delete"
+                                           Target="_blank"
+                                           Size="Size.Small"
+                                           OnClick="@(async() => await DeleteSDS(context))">
+                                    Delete
+                                </MudButton>
+                            </MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
 
-                <PagerContent>
-                    <MudTablePager />
-                </PagerContent>
-            </MudTable>
-        </MudItem>
-        <MudItem xs="12" md="6">
-            @if (pdfBytes != null)
-            {
-                <MudItem width="100%" height="100%" style="border: none;">
-                    @if (pdfBytes is not null)
+            <MudItem xs="12" md="6">
+                <MudPaper Class="pa-4 elevation-1">
+                    <MudText Align="Align.Center" Typo="Typo.h6" Class="fw-bold mb-2 mt-1">
+                        File Preview
+                    </MudText>
+                    @if (pdfBytes != null)
                     {
-                        <DxPdfViewer DocumentContent="pdfBytes"
-                            DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
-                            CssClass="component-class" 
-                            ZoomLevel="1.0"/>
+                        <MudItem width="100%" height="100%" style="border: none;">
+                            @if (pdfBytes is not null)
+                            {
+                                <DxPdfViewer DocumentContent="pdfBytes"
+                                    DocumentName="@($"{(string.IsNullOrWhiteSpace(selectedSDS) ? "document" : selectedSDS)}.pdf")"
+                                    CssClass="component-class" 
+                                    ZoomLevel="1.0"/>
 
-                        <noscript>
-                        <p>Your browser does not support PDF viewing.</p>
-                        </noscript>
+                                <noscript>
+                                <p>Your browser does not support PDF viewing.</p>
+                                </noscript>
+                            }
+                            else
+                            {
+                                <p>Your browser does not support PDF viewing.</p>
+                            }
+                        </MudItem>
                     }
-                    else
-                    {
-                        <p>Your browser does not support PDF viewing.</p>
-                    }
-                </MudItem>
-            }
-        </MudItem>
-    </MudGrid>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+    }
 </MudContainer>
-@code {
-    public List<Document>? TableResults { get; set; } = null!;
 
+@code {
+
+    public List<Document>? TableResults { get; set; } = null!;
     private string selectedSDS = string.Empty;
     private byte[]? pdfBytes;
     private string? fileName { get; set; }
     private MudTextField<string> fileNameRef;
     private Document selectedDocument = new();
+    IBrowserFile? selectedFile;
 
     protected override async Task OnInitializedAsync()
     {
@@ -187,13 +229,14 @@
         }
 
     }
+
     private string GetPdfDataUrl()
     {
         if (pdfBytes == null) return string.Empty;
-
         var base64 = Convert.ToBase64String(pdfBytes);
         return $"data:application/pdf;base64,{base64}";
     }
+
     private async Task GetTableResultByFileName(string fileName)
     {
         if (!string.IsNullOrEmpty(fileName))
@@ -219,36 +262,14 @@
     }
     private string GetLanguage(string fileName)
     {
-        string languageCode = !String.IsNullOrWhiteSpace(fileName) && fileName.Length >= 2 ?
-        fileName.Substring(0, 2) : fileName;
-        var result = languageCode switch
-        {
-            "cs" or "cz" => "Czech",
-            "de" => "German",
-            "en" => "English",
-            "es" => "Spanish",
-            "et" => "",
-            "fi" => "Finnish",
-            "fr" => "French",
-            "hu" => "Hungarian",
-            "it" => "Italian",
-            "ms" => "Malay",
-            "no" => "Norwegian",
-            "pl" => "Polish",
-            "pt" => "Portuguese",
-            "ro" => "Romanian",
-            "ru" => "Russian",
-            "sv" => "Swedish",
-            "zf" => "Chinese (Simplified)",
-            "zh" => "Chinese",
-            _ => "Unsupported language"
-        };
-        return result;
+        return languageService.GetLanguage(fileName);
     }
+
     private string GetRegion(string fileName)
     {
         return languageService.GetRegion(fileName);
     }
+
     private async Task DeleteSDS(Document document)
     {
         await documentService.Delete(document, user);
@@ -267,24 +288,37 @@
             }
         }
     }
+
     private void ClearFileName()
     {
         fileNameRef = new();
         fileName = string.Empty;
     }
 
-    private async Task HandleFileUpload(InputFileChangeEventArgs e)
+    private void UploadSinglePdf(IBrowserFile file)
+    {
+        selectedFile = file;
+    }
+
+    private async Task OnUploadClicked()
     {
 
-        var file = e.File;
+        var file = selectedFile;
 
         if (file == null || file.ContentType != "application/pdf")
+        {
+            Snackbar.Add("Please upload a valid PDF file.", Severity.Warning);
             return;
+        }
 
+        var language = GetLanguage(file.Name);
+        if (language == "Unsupported language")
+        {
+            Snackbar.Add("The uploaded file must start with a supported 2-letter language code (e.g., en, fr, de).", Severity.Error);
+            return;
+        }
 
         var uploadFolder = config["ResourcePathOpen"];
-
-
         var filePath = Path.Combine(uploadFolder, file.Name);
         Document document = new()
             {
@@ -314,5 +348,10 @@
             Snackbar.Add($"SDS {document.FileName} was added to {uploadFolder}", Severity.Info);
             await actionItemService.CreateNewSDSActionItem(document);
         }
+    }
+
+    private void ClearFile()
+    {
+        selectedFile = null;
     }
 }
