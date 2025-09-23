@@ -36,7 +36,9 @@ public class DocumentRepository : IDocumentRepository
     {
         await using SDSFinderContext context = await _contextFactory.CreateDbContextAsync();
         List<Document> documents = context.Documents
-            .Where(x => x.FileName == document.FileName && x.IsDeleted == false)
+            .Where(x => x.FileName == document.FileName
+             && x.FileLocation.ToLower() == document.FileLocation.ToLower()
+             && x.IsDeleted == false)
             .ToList();
         if (documents.Count > 0)
         {

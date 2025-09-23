@@ -44,22 +44,21 @@
                 </MudItem>
             </MudGrid>
 
-            @if (selectedFile == null)
-            {
-                <MudFileUpload T="IBrowserFile"
-                               Accept=".pdf"
-                               FilesChanged="UploadSinglePdf"
-                               MaximumFileCount="1">
-                    <ActivatorContent>
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.UploadFile">
-                            Add InterCompany SDS
-                        </MudButton>
-                    </ActivatorContent>
-                </MudFileUpload>
-            }
-            else
+            <MudFileUpload T="IBrowserFile"
+                           Accept=".pdf"
+                           FilesChanged="UploadSinglePdf"
+                           MaximumFileCount="1"
+                           Style="@(selectedFile is null ? string.Empty : "display:none")">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.UploadFile">
+                        Add InterCompany SDS
+                    </MudButton>
+                </ActivatorContent>
+            </MudFileUpload>
+
+            @if (selectedFile is not null)
             {
                 <div class="d-flex align-items-center gap-3 mt-4">
                     <MudButton Color="Color.Success"
@@ -331,9 +330,10 @@
                 IsDeleted = false,
                 SafetyDocumentId = AdminModules.GetSafetyID(file.Name)
             };
-        var documents = await documentService.GetAll();
 
-        var filteredDocuments = documents.Where(x => x.FileName == document.FileName).ToList();
+        List<Document> filteredDocuments = await documentService.GetListBy(x => x.FileName.ToLower() == file.Name.ToLower()
+                        && x.FileLocation.ToLower() == filePath.ToLower() && x.IsDeleted == false );
+
         if (filteredDocuments.Count() > 0)
         {
             Snackbar.Add($"SDS \"{document.FileName}\" already exists in the file path.", Severity.Error);
@@ -349,6 +349,7 @@
             }
             Snackbar.Add($"SDS {document.FileName} was added to {uploadFolder}", Severity.Info);
             await actionItemService.CreateNewSDSActionItem(document);
+            ClearFile();
         }
     }
 
