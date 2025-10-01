@@ -44,6 +44,7 @@ public class ActionItemService : IActionItemService
             ActionItemModel actionItemModel = new()
             {
                 Title = $"New SDS {document.FileName} has been added.",
+                Type = ActionItemTypes.OneTime,
                 URL = $"{basePath}/SDSFinder/",
                 Description = $"SDS {document.FileName} has been added to the {_configuration.GetValue<string>("Region")} environment of the SDS Finder App, please update Syteline Global Item records accordingly.",
                 AssignedTo = assignedTo,
