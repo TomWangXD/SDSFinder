@@ -47,7 +47,7 @@
                               Margin="@Margin.Dense"
                               Dense="true"
                               TextChanged="(async(value) => { jobNumber = value; })"
-                              OnBlur="@(async() => await JobNumberValidation(jobNumber, jobRef, site.SiteCode, Snackbar))"
+                              OnBlur="@(async() => await JobNumberValidation(jobNumber, jobRef, site?.SiteCode, Snackbar))"
                               Variant="Variant.Filled" />
             </MudItem>
             <MudItem xs="4" Class="button">
@@ -55,7 +55,7 @@
                            Size="Size.Medium"
                            Color="Color.Primary"
                            Disabled="@ReadOnly"
-                           OnClick="@(async() => await GetTableResults(jobNumber, site.SiteCode))">
+                           OnClick="@(async() => await GetTableResults(jobNumber, site?.SiteCode))">
                     <MudText>Search</MudText>
                 </MudButton>
             </MudItem>
@@ -81,22 +81,18 @@
     private List<SDSTableResult?> TableResults = new();
     private CmSiteMaster? site
     {
-        get
-        {
-            return _site;
-        }
+        get => _site;
         set
         {
-            // if (value is not null && _site != value)
-            // {
-            //     _site = value;
-            //     ReadOnly = false;
-            // }
-            // else
             if (value is null)
             {
                 _site = null;
                 ReadOnly = true;
+            }
+            else
+            {
+                _site = value;
+                ReadOnly = false;
             }
         }
     }
@@ -131,11 +127,17 @@
 
     }
 
-    private async Task JobNumberValidation(string jobNumber, MudTextField<string> jobRef, string site, ISnackbar snackbar)
+    private async Task JobNumberValidation(string jobNumber, MudTextField<string> jobRef, string? site, ISnackbar snackbar)
     {
+        if (string.IsNullOrWhiteSpace(site))
+        {
+            snackbar.Add("Please choose a site", Severity.Info);
+            await jobRef.Clear();
+            return;
+        }
 
         var fullJob = await jobService.ExpandJob(jobNumber);
-        var validationResult = await jobService.ValidateJob(fullJob, site);
+        var validationResult = await jobService.ValidateJob(fullJob, site!);
         if (validationResult == false)
         {
             snackbar.Add($"No {site} jobs found for job number {fullJob}", Severity.Info);
@@ -143,9 +145,14 @@
         }
     }
 
-    private async Task GetTableResults(string jobNumber, string site)
+    private async Task GetTableResults(string jobNumber, string? site)
     {
-        TableResults = new();       
+        TableResults = new();
+        if (string.IsNullOrWhiteSpace(site))
+        {
+            Snackbar.Add("Please choose a site", Severity.Info);
+            return;
+        }
         var fullJob = await jobService.ExpandJob(jobNumber);
         if (string.IsNullOrWhiteSpace(fullJob))
         {
@@ -154,7 +161,7 @@
         }
 
 
-        JobMst? job = await jobService.Get(fullJob, site);
+        JobMst? job = await jobService.Get(fullJob, site!);
         ItemGlbl? item = await itemService.GetBy(x => x.Item == job.Item);
         if (item is null)
         {
@@ -164,7 +171,7 @@
         }
 
         List<Document> documents = await GetDocuments(item);
-        string? ghsLanguage = await GetGhsLanguageAsync(fullJob, site);
+        string? ghsLanguage = await GetGhsLanguageAsync(fullJob, site!);
 
         List<SDSTableResult> results = new();
         foreach (Document document in documents)
