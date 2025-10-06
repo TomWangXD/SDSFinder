@@ -47,7 +47,7 @@
                               Margin="@Margin.Dense"
                               Dense="true"
                               TextChanged="(async(value) => { jobNumber = value; })"
-                              OnBlur="@(async() => await JobNumberValidation(jobNumber, jobRef, site.SiteCode, Snackbar))"
+                              OnBlur="@(async () => await JobNumberValidation(jobNumber, jobRef, site?.SiteCode, Snackbar))"
                               Variant="Variant.Filled" />
             </MudItem>
             <MudItem xs="4" Class="button">
@@ -55,7 +55,7 @@
                            Size="Size.Medium"
                            Color="Color.Primary"
                            Disabled="@ReadOnly"
-                           OnClick="@(async() => await GetTableResults(jobNumber, site.SiteCode))">
+                           OnClick="@(async () => await GetTableResults(jobNumber, site?.SiteCode))">
                     <MudText>Search</MudText>
                 </MudButton>
             </MudItem>
@@ -81,22 +81,18 @@
     private List<SDSTableResult?> TableResults = new();
     private CmSiteMaster? site
     {
-        get
-        {
-            return _site;
-        }
+        get => _site;
         set
         {
-            // if (value is not null && _site != value)
-            // {
-            //     _site = value;
-            //     ReadOnly = false;
-            // }
-            // else
             if (value is null)
             {
                 _site = null;
                 ReadOnly = true;
+            }
+            else if (!ReferenceEquals(_site, value))
+            {
+                _site = value;
+                ReadOnly = false;
             }
         }
     }
