@@ -29,6 +29,7 @@
                                  Margin="@Margin.Dense"
                                  Dense="true"
                                  Variant="Variant.Filled"
+                                 MinCharacters="0"
                                  SearchFunc="GetSites"
                                  ToStringFunc="@(e => e is null || string.IsNullOrEmpty(e.SiteCode) || string.IsNullOrEmpty(e.SiteName) ? null : $"{e.SiteCode} - {e.SiteName}")"
                                  MaxItems="100"
