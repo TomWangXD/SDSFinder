@@ -87,12 +87,13 @@
         }
         set
         {
-            if (value is not null && _site != value)
-            {
-                _site = value;
-                ReadOnly = false;
-            }
-            else
+            // if (value is not null && _site != value)
+            // {
+            //     _site = value;
+            //     ReadOnly = false;
+            // }
+            // else
+            if (value is null)
             {
                 _site = null;
                 ReadOnly = true;
