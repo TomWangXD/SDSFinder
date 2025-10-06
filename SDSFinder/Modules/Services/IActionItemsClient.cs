@@ -1,4 +1,4 @@
-﻿using Indium.Common.DataTransferObjects.ActionItems;
+﻿using Indium.Components.ActionItems.DataTransferObjects;
 
 namespace SDSFinder.Modules.Services;
 

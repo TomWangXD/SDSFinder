@@ -13,6 +13,8 @@ global using Indium.Common.Modules;
 global using Indium.Components;
 global using Microsoft.AspNetCore.Http;
 global using Microsoft.EntityFrameworkCore;
+global using Indium.Components.Form;
+global using Indium.Components.ActionItems;
 global using Microsoft.Extensions.Configuration;
 global using Microsoft.Extensions.Logging;
 global using Microsoft.JSInterop;
